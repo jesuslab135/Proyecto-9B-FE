@@ -1,7 +1,7 @@
 const TitleHome = () => {
     return (
         <>
-            <h1 className="back">Se renderiza correctamente</h1>
+            <h1 className="">Se renderiza correctamente</h1>
         </>
     )
 }
