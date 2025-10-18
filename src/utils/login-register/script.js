@@ -1,6 +1,6 @@
 export const loginRegisterScript = () => {
 
-const container = document.querySelector('.container');
+const container = document.querySelector('.container-login-register');
 const registerBtn = document.querySelector('.register-btn');
 const loginBtn = document.querySelector('.login-btn');
 
