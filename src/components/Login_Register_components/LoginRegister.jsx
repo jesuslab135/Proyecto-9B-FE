@@ -16,8 +16,8 @@ const LoginRegister = () => {
                     <Link to="/"><i className='bx bx-chevron-left'></i></Link>
                 </div>
                 <div className="form-box login">
-                    <form action="">
-                        <h1>Login</h1>
+                    <form className="form-pro" action="">
+                        <h1 className="login-h1">Login</h1>
                         <div className="input-box">
                             <input type="text" placeholder="Username" required />
                             <i className='bx bxs-user' ></i> 
