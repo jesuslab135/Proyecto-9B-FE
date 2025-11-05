@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/AuthService';
 import { logger } from '../../services/Logger';
-import { http } from '../../utils/api/https';
+import { ConsumidoresAPI } from '../../utils/api/consumidores.client';
 import './OnboardingForms.css';
 
 const PhysicalDataForm = () => {
@@ -67,19 +66,72 @@ const PhysicalDataForm = () => {
 
       logger.info('PhysicalDataForm: Submitting physical data');
 
-      await http.post(`/consumidores`, {
+      // ✅ PASO 1: Verificar si ya existe un consumidor para este usuario
+      let consumidor = null;
+      let consumidorExists = false;
+
+      // Verificar si el usuario ya tiene un consumidor_id
+      if (currentUser.consumidor_id) {
+        try {
+          logger.info('PhysicalDataForm: Checking existing consumidor', { consumidor_id: currentUser.consumidor_id });
+          consumidor = await ConsumidoresAPI.get(currentUser.consumidor_id);
+          consumidorExists = true;
+          logger.info('PhysicalDataForm: Consumidor already exists, will UPDATE');
+        } catch {
+          logger.warn('PhysicalDataForm: Consumidor not found with ID, will try to list');
+        }
+      }
+
+      // Si no se encontró, buscar por usuario_id en la lista
+      if (!consumidorExists) {
+        try {
+          const consumidoresList = await ConsumidoresAPI.list({ usuario_id: currentUser.id });
+          if (consumidoresList && consumidoresList.length > 0) {
+            consumidor = consumidoresList[0];
+            consumidorExists = true;
+            logger.info('PhysicalDataForm: Consumidor found in list, will UPDATE');
+          }
+        } catch {
+          logger.info('PhysicalDataForm: No existing consumidor found, will CREATE');
+        }
+      }
+
+      const dataToSend = {
         usuario_id: currentUser.id,
         edad,
         peso,
         altura,
-      });
+      };
+
+      let response;
+
+      // ✅ PASO 2: CREATE o UPDATE según corresponda
+      if (consumidorExists && consumidor?.id) {
+        logger.info('PhysicalDataForm: Updating consumidor', { consumidor_id: consumidor.id });
+        response = await ConsumidoresAPI.patch(consumidor.id, dataToSend);
+      } else {
+        logger.info('PhysicalDataForm: Creating new consumidor');
+        response = await ConsumidoresAPI.create(dataToSend);
+      }
 
       logger.info('PhysicalDataForm: Physical data saved successfully');
 
-      navigate('/onboarding/formularios');
+      // 🔥 CRÍTICO: Guardar el consumidor_id para usarlo en el siguiente formulario
+      if (response && response.id) {
+        localStorage.setItem('consumidor_id', response.id);
+        logger.info('PhysicalDataForm: Consumidor ID saved', { consumidor_id: response.id });
+      }
+
+      navigate('/onboarding/habitos');
     } catch (error) {
       logger.error('PhysicalDataForm: Error saving physical data', error);
-      setError('Error al guardar los datos. Por favor intente nuevamente.');
+      
+      let errorMessage = 'Error al guardar los datos. Por favor intente nuevamente.';
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
