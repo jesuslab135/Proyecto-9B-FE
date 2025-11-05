@@ -1,5 +1,7 @@
 export const API = {
   usuarios: "usuarios",
+  usLogin: "usuarios/login",
+  usRegister: "usuarios/register",
   administradores: "administradores",
   consumidores: "consumidores",
   emociones: "emociones",
