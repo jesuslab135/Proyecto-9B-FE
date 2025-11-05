@@ -1,8 +1,3 @@
-/**
- * useAuth Hook
- * React hook for easy access to authentication functionality
- * Provides auth state and methods to any component
- */
 
 import { useState, useEffect } from 'react';
 import { authService } from '../services/AuthService';
@@ -14,20 +9,16 @@ export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Subscribe to auth changes
     const unsubscribe = authService.onAuthChange((authenticated, userData) => {
       setIsAuthenticated(authenticated);
       setUser(userData);
       logger.debug('useAuth: Auth state changed', { authenticated });
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
-  /**
-   * Login user
-   */
+
   const login = async (email, password) => {
     setIsLoading(true);
     try {
@@ -38,9 +29,7 @@ export const useAuth = () => {
     }
   };
 
-  /**
-   * Register user
-   */
+
   const register = async (userData) => {
     setIsLoading(true);
     try {
@@ -51,23 +40,16 @@ export const useAuth = () => {
     }
   };
 
-  /**
-   * Logout user
-   */
   const logout = () => {
     return authService.logout();
   };
 
-  /**
-   * Refresh token
-   */
+
   const refreshToken = async () => {
     return await authService.refreshToken();
   };
 
-  /**
-   * Update user profile
-   */
+
   const updateProfile = async (profileData) => {
     setIsLoading(true);
     try {
@@ -78,9 +60,7 @@ export const useAuth = () => {
     }
   };
 
-  /**
-   * Get user profile from server
-   */
+
   const fetchUserProfile = async () => {
     setIsLoading(true);
     try {
@@ -92,16 +72,13 @@ export const useAuth = () => {
   };
 
   return {
-    // State
     user,
     isAuthenticated,
     isLoading,
     
-    // Role checks
     isAdmin: user?.rol === 'administrador',
     isConsumer: user?.rol === 'consumidor',
     
-    // Methods
     login,
     register,
     logout,

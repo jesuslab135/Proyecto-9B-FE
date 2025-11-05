@@ -1,8 +1,3 @@
-/**
- * AuthService - Singleton Pattern
- * Handles authentication, authorization, and JWT token management
- * Implements role-based access control for admin and consumer users
- */
 
 import { UsuariosAPI } from '../utils/api/usuarios.client';
 import { storageService } from './StorageService';
@@ -24,15 +19,12 @@ class AuthService {
     this.currentUser = null;
     this.authCallbacks = [];
 
-    // Initialize from storage
     this._initializeFromStorage();
 
     AuthService.instance = this;
   }
 
-  /**
-   * Get singleton instance
-   */
+
   static getInstance() {
     if (!AuthService.instance) {
       AuthService.instance = new AuthService();
@@ -40,9 +32,7 @@ class AuthService {
     return AuthService.instance;
   }
 
-  /**
-   * Initialize authentication state from storage
-   */
+
   _initializeFromStorage() {
     try {
       if (storageService.isAuthenticated()) {
@@ -58,9 +48,7 @@ class AuthService {
     }
   }
 
-  /**
-   * Subscribe to authentication state changes
-   */
+
   onAuthChange(callback) {
     this.authCallbacks.push(callback);
     return () => {
@@ -68,9 +56,7 @@ class AuthService {
     };
   }
 
-  /**
-   * Notify all subscribers of auth state change
-   */
+
   _notifyAuthChange(isAuthenticated, user = null) {
     this.authCallbacks.forEach(callback => {
       try {
@@ -83,9 +69,9 @@ class AuthService {
 
   /**
    * Login user with email and password
-   * @param {string} email - User email
-   * @param {string} password - User password
-   * @returns {Promise<Object>} User data with token
+   * @param {string} email 
+   * @param {string} password 
+   * @returns {Promise<Object>}
    */
   async login(email, password) {
     try {
@@ -95,12 +81,11 @@ class AuthService {
 
       const { token, refresh_token, user, expires_in } = response;
 
-      // Validate response
+
       if (!token || !user) {
         throw new Error('Invalid response from server');
       }
 
-      // Store authentication data
       storageService.setToken(token, expires_in);
       if (refresh_token) {
         storageService.setRefreshToken(refresh_token);
@@ -124,7 +109,6 @@ class AuthService {
     } catch (error) {
       logger.error('AuthService: Login failed', error);
       
-      // Parse error message
       const errorMessage = error.response?.data?.detail 
         || error.response?.data?.message 
         || error.message 
@@ -139,8 +123,8 @@ class AuthService {
 
   /**
    * Register new user
-   * @param {Object} userData - User registration data
-   * @returns {Promise<Object>} Registration result
+   * @param {Object} userData - 
+   * @returns {Promise<Object>} 
    */
   async register(userData) {
     try {
@@ -153,12 +137,11 @@ class AuthService {
         email: userData.email,
         password: userData.password,
         telefono: userData.telefono || null,
-        rol: userData.rol || this.ROLES.CONSUMER, // Default to consumer
+        rol: userData.rol || this.ROLES.CONSUMER, 
       });
 
       const { token, user, expires_in } = response;
 
-      // Auto-login after registration
       if (token && user) {
         storageService.setToken(token, expires_in);
         storageService.setUser(user);
@@ -191,9 +174,7 @@ class AuthService {
     }
   }
 
-  /**
-   * Logout current user
-   */
+
   logout() {
     logger.info('AuthService: User logging out', {
       userId: this.currentUser?.id,
@@ -209,13 +190,10 @@ class AuthService {
     };
   }
 
-  /**
-   * Refresh authentication token (not available in backend)
-   */
+
   async refreshToken() {
     try {
       logger.warn('AuthService: Token refresh not implemented in backend');
-      // Since refresh token endpoint doesn't exist, just logout
       this.logout();
 
       return {
@@ -233,44 +211,29 @@ class AuthService {
     }
   }
 
-  /**
-   * Get current authenticated user
-   */
+
   getCurrentUser() {
     return this.currentUser;
   }
 
-  /**
-   * Check if user is authenticated
-   */
+
   isAuthenticated() {
     return storageService.isAuthenticated() && this.currentUser !== null;
   }
 
-  /**
-   * Check if user has specific role
-   */
   hasRole(role) {
     return this.currentUser?.rol === role;
   }
 
-  /**
-   * Check if user is admin
-   */
+
   isAdmin() {
     return this.hasRole(this.ROLES.ADMIN);
   }
 
-  /**
-   * Check if user is consumer
-   */
   isConsumer() {
     return this.hasRole(this.ROLES.CONSUMER);
   }
 
-  /**
-   * Get redirect path based on user role
-   */
   _getRedirectPath(role) {
     switch (role) {
       case this.ROLES.ADMIN:
@@ -282,9 +245,7 @@ class AuthService {
     }
   }
 
-  /**
-   * Get user profile
-   */
+
   async getUserProfile() {
     try {
       const userId = this.currentUser?.id;
@@ -297,7 +258,6 @@ class AuthService {
 
       const user = await UsuariosAPI.get(userId);
 
-      // Update stored user data
       storageService.setUser(user);
       this.currentUser = user;
 
@@ -315,9 +275,7 @@ class AuthService {
     }
   }
 
-  /**
-   * Update user profile
-   */
+
   async updateProfile(userData) {
     try {
       const userId = this.currentUser?.id;
@@ -330,7 +288,6 @@ class AuthService {
 
       const user = await UsuariosAPI.patch(userId, userData);
 
-      // Update stored user data
       storageService.setUser(user);
       this.currentUser = user;
 
@@ -352,6 +309,5 @@ class AuthService {
   }
 }
 
-// Export singleton instance
 export const authService = AuthService.getInstance();
 export default authService;
