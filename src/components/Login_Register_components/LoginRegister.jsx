@@ -8,13 +8,13 @@ import "../../styles/login-register/style.css";
 const LoginRegister = () => {
   const navigate = useNavigate();
 
-  // Login form state
+
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
 
-  // Register form state
+
   const [registerData, setRegisterData] = useState({
     nombre: "",
     email: "",
@@ -22,7 +22,6 @@ const LoginRegister = () => {
     telefono: "",
   });
 
-  // UI state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -30,7 +29,7 @@ const LoginRegister = () => {
   useEffect(() => {
     loginRegisterScript();
 
-    // Redirect if already authenticated
+
     if (authService.isAuthenticated()) {
       const user = authService.getCurrentUser();
       const redirectPath = user?.rol === 'administrador' ? '/admin/dashboard' : '/dashboard';
@@ -38,39 +37,39 @@ const LoginRegister = () => {
     }
   }, [navigate]);
 
-  // Handle login form input changes
+
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
     setLoginData(prev => ({
       ...prev,
       [name]: value,
     }));
-    setError(""); // Clear errors on input change
+    setError(""); 
   };
 
-  // Handle register form input changes
+
   const handleRegisterChange = (e) => {
     const { name, value } = e.target;
     setRegisterData(prev => ({
       ...prev,
       [name]: value,
     }));
-    setError(""); // Clear errors on input change
+    setError(""); 
   };
 
-  // Handle login form submission
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    // Validation
+
     if (!loginData.email || !loginData.password) {
       setError("Por favor complete todos los campos");
       return;
     }
 
-    // Email validation
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(loginData.email)) {
       setError("Por favor ingrese un email válido");
@@ -88,7 +87,7 @@ const LoginRegister = () => {
         setSuccess("¡Inicio de sesión exitoso!");
         logger.info('LoginRegister: Login successful, redirecting');
 
-        // Redirect based on role
+
         setTimeout(() => {
           navigate(result.redirectTo);
         }, 500);
@@ -104,26 +103,26 @@ const LoginRegister = () => {
     }
   };
 
-  // Handle register form submission
+
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    // Validation
+
     if (!registerData.nombre || !registerData.email || !registerData.password) {
       setError("Por favor complete todos los campos obligatorios");
       return;
     }
 
-    // Email validation
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(registerData.email)) {
       setError("Por favor ingrese un email válido");
       return;
     }
 
-    // Password strength validation
+
     if (registerData.password.length < 6) {
       setError("La contraseña debe tener al menos 6 caracteres");
       return;
@@ -140,7 +139,7 @@ const LoginRegister = () => {
         setSuccess("¡Registro exitoso! Redirigiendo...");
         logger.info('LoginRegister: Registration successful');
 
-        // Redirect to additional forms (physical data, formularios)
+
         setTimeout(() => {
           navigate('/onboarding/physical-data');
         }, 1000);
@@ -164,7 +163,7 @@ const LoginRegister = () => {
                     <Link to="/"><i className='bx bx-chevron-left'></i></Link>
                 </div>
 
-                {/* Error/Success Messages */}
+
                 {error && (
                   <div style={{
                     position: 'absolute',
@@ -201,7 +200,7 @@ const LoginRegister = () => {
                   </div>
                 )}
 
-                {/* Login Form */}
+
                 <div className="form-box login">
                     <form className="form-pro" onSubmit={handleLoginSubmit}>
                         <h1 className="login-h1">Login</h1>
@@ -249,7 +248,7 @@ const LoginRegister = () => {
                     </form>
                 </div>
 
-                {/* Register Form */}
+ 
                 <div className="form-box register">
                     <form onSubmit={handleRegisterSubmit}>
                         <h1>Registration</h1>
@@ -317,7 +316,7 @@ const LoginRegister = () => {
                     </form>
                 </div>
 
-                {/* Toggle Panels */}
+    
                 <div className="toggle-box">
                     <div className="toggle-panel toggle-left">
                         <h1>Hello, Welcome!</h1>

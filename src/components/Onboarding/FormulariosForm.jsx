@@ -1,8 +1,3 @@
-/**
- * FormulariosForm Component
- * Collects detailed user questionnaire data
- * This form is filled once during onboarding
- */
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -41,7 +36,6 @@ const FormulariosForm = () => {
     e.preventDefault();
     setError('');
 
-    // Validation
     const requiredFields = [
       'habito_principal',
       'frecuencia_uso',
@@ -75,7 +69,6 @@ const FormulariosForm = () => {
 
       logger.info('FormulariosForm: Formularios data saved successfully');
 
-      // Navigate to dashboard after completing onboarding
       navigate('/dashboard');
     } catch (error) {
       logger.error('FormulariosForm: Error saving formularios data', error);
@@ -86,7 +79,6 @@ const FormulariosForm = () => {
   };
 
   const handleSkip = () => {
-    // Allow users to skip and complete later
     navigate('/dashboard');
   };
 
