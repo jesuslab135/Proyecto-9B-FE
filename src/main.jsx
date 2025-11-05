@@ -5,10 +5,17 @@ import { lazy } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from './pages/home/Home'
 import Login_Register from './pages/login-register/Login_Register'
+import ProtectedRoute from './components/Auth/ProtectedRoute'
+import PhysicalDataForm from './components/Onboarding/PhysicalDataForm'
+import FormulariosForm from './components/Onboarding/FormulariosForm'
 
 const App = lazy(() => import('./App'));
 
 const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <Login_Register />
+  },
   {
     element: <App />,
     children: [
@@ -17,8 +24,36 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
-        path: '/login',
-        element: <Login_Register />
+        path: '/onboarding/physical-data',
+        element: (
+          <ProtectedRoute>
+            <PhysicalDataForm />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: '/onboarding/formularios',
+        element: (
+          <ProtectedRoute>
+            <FormulariosForm />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: '/dashboard',
+        element: (
+          <ProtectedRoute requiredRole="consumidor">
+            <h1>Consumer Dashboard</h1>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: '/admin/dashboard',
+        element: (
+          <ProtectedRoute requiredRole="administrador">
+            <h1>Admin Dashboard</h1>
+          </ProtectedRoute>
+        )
       },
       {
         path: '/hola',
