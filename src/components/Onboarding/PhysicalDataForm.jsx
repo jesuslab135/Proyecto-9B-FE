@@ -1,8 +1,3 @@
-/**
- * PhysicalDataForm Component
- * Collects user physical data: edad (age), peso (weight), altura (height)
- * This form is filled once during onboarding
- */
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -72,8 +67,6 @@ const PhysicalDataForm = () => {
 
       logger.info('PhysicalDataForm: Submitting physical data');
 
-      // Create or update consumidor record with physical data
-      // Based on backend API: POST /api/consumidores/ or PATCH /api/consumidores/{id}
       await http.post(`/consumidores`, {
         usuario_id: currentUser.id,
         edad,
@@ -83,7 +76,6 @@ const PhysicalDataForm = () => {
 
       logger.info('PhysicalDataForm: Physical data saved successfully');
 
-      // Navigate to next form (formularios)
       navigate('/onboarding/formularios');
     } catch (error) {
       logger.error('PhysicalDataForm: Error saving physical data', error);
@@ -94,7 +86,6 @@ const PhysicalDataForm = () => {
   };
 
   const handleSkip = () => {
-    // Allow users to skip this step and complete it later
     navigate('/dashboard');
   };
 

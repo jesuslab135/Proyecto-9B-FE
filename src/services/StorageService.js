@@ -1,8 +1,3 @@
-/**
- * StorageService - Singleton Pattern
- * Manages secure storage of authentication tokens and user data
- * Handles localStorage with error handling and data validation
- */
 
 import { logger } from './Logger';
 
@@ -24,9 +19,6 @@ class StorageService {
     StorageService.instance = this;
   }
 
-  /**
-   * Get singleton instance
-   */
   static getInstance() {
     if (!StorageService.instance) {
       StorageService.instance = new StorageService();
@@ -34,9 +26,7 @@ class StorageService {
     return StorageService.instance;
   }
 
-  /**
-   * Safely set item in localStorage
-   */
+
   _setItem(key, value) {
     try {
       const serialized = typeof value === 'string' ? value : JSON.stringify(value);
@@ -49,9 +39,7 @@ class StorageService {
     }
   }
 
-  /**
-   * Safely get item from localStorage
-   */
+
   _getItem(key, parse = false) {
     try {
       const value = localStorage.getItem(key);
@@ -64,9 +52,7 @@ class StorageService {
     }
   }
 
-  /**
-   * Safely remove item from localStorage
-   */
+
   _removeItem(key) {
     try {
       localStorage.removeItem(key);
@@ -78,9 +64,7 @@ class StorageService {
     }
   }
 
-  /**
-   * Save authentication token
-   */
+
   setToken(token, expiresIn = null) {
     const success = this._setItem(this.KEYS.TOKEN, token);
     
@@ -92,16 +76,12 @@ class StorageService {
     return success;
   }
 
-  /**
-   * Get authentication token
-   */
+
   getToken() {
     return this._getItem(this.KEYS.TOKEN);
   }
 
-  /**
-   * Check if token is expired
-   */
+
   isTokenExpired() {
     const expiry = this._getItem(this.KEYS.TOKEN_EXPIRY);
     if (!expiry) return false;
@@ -109,37 +89,27 @@ class StorageService {
     return Date.now() > parseInt(expiry, 10);
   }
 
-  /**
-   * Save refresh token
-   */
+
   setRefreshToken(token) {
     return this._setItem(this.KEYS.REFRESH_TOKEN, token);
   }
 
-  /**
-   * Get refresh token
-   */
+
   getRefreshToken() {
     return this._getItem(this.KEYS.REFRESH_TOKEN);
   }
 
-  /**
-   * Save user data
-   */
+
   setUser(userData) {
     return this._setItem(this.KEYS.USER, userData);
   }
 
-  /**
-   * Get user data
-   */
+
   getUser() {
     return this._getItem(this.KEYS.USER, true);
   }
 
-  /**
-   * Clear all authentication data
-   */
+
   clearAuth() {
     logger.info('StorageService: Clearing authentication data');
     this._removeItem(this.KEYS.TOKEN);
@@ -148,9 +118,7 @@ class StorageService {
     this._removeItem(this.KEYS.TOKEN_EXPIRY);
   }
 
-  /**
-   * Check if user is authenticated
-   */
+
   isAuthenticated() {
     const token = this.getToken();
     const isExpired = this.isTokenExpired();
@@ -158,15 +126,12 @@ class StorageService {
     return token && !isExpired;
   }
 
-  /**
-   * Get user role
-   */
+
   getUserRole() {
     const user = this.getUser();
     return user?.rol || null;
   }
 }
 
-// Export singleton instance
 export const storageService = StorageService.getInstance();
 export default storageService;
