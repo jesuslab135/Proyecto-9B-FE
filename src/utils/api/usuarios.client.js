@@ -2,7 +2,6 @@ import { API } from "./endpoints";
 import * as r from "./rest";
 
 export const UsuariosAPI = {
-
   list:  (params)       => r.list(API.usuarios, params),
   get:   (id)           => r.getOne(API.usuarios, id),
   create:(body)         => r.create(API.usuarios, body), 
