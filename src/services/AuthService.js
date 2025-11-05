@@ -78,11 +78,16 @@ class AuthService {
       logger.info('AuthService: Attempting login', { email });
 
       const response = await UsuariosAPI.login(email, password);
+      
+      // Log para ver qué devuelve el backend
+      logger.debug('AuthService: Backend response', response);
+      console.log('🔍 Backend login response:', response);
 
       const { token, refresh_token, user, expires_in } = response;
 
 
       if (!token || !user) {
+        console.error('❌ Missing token or user in response:', { token: !!token, user: !!user });
         throw new Error('Invalid response from server');
       }
 
