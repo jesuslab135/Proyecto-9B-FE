@@ -13,15 +13,15 @@ const App = lazy(() => import('./App'));
 
 const router = createBrowserRouter([
   {
+    path: '/login',
+    element: <Login_Register />
+  },
+  {
     element: <App />,
     children: [
       {
         path: '/',
         element: <Home />
-      },
-      {
-        path: '/login',
-        element: <Login_Register />
       },
       {
         path: '/onboarding/physical-data',
