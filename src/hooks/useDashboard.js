@@ -11,3 +11,4 @@ export const useDesiresTracking   = (consumidor_id) => useQueryHelper(["dash","d
 export const useDesiresStats      = (consumidor_id) => useQueryHelper(["dash","dStats", consumidor_id||"all"], () => DashboardAPI.desiresStats(consumidor_id?{consumidor_id}:undefined));
 export const useDailySummary      = (consumidor_id) => useQueryHelper(["dash","daily", consumidor_id||"all"], () => DashboardAPI.dailySummary(consumidor_id?{consumidor_id}:undefined));
 export const useWeeklyComparison  = (consumidor_id) => useQueryHelper(["dash","weekly", consumidor_id||"all"], () => DashboardAPI.weeklyComparison(consumidor_id?{consumidor_id}:undefined));
+export const useHeartRateToday    = (consumidor_id) => useQueryHelper(["dash","hrToday", consumidor_id||"all"], () => DashboardAPI.heartRateToday(consumidor_id?{consumidor_id}:undefined));

@@ -7,16 +7,18 @@ import Home from './pages/home/Home'
 import Login_Register from './pages/login-register/Login_Register'
 import ProtectedRoute from './components/Auth/ProtectedRoute'
 import PhysicalDataForm from './components/Onboarding/PhysicalDataForm'
-import FormulariosForm from './components/Onboarding/FormulariosForm'
 import Habits from './pages/onboarding/Habits'
 import Results from './pages/onboarding/Results'
+import DashboardLayout from './components/layouts/DashboardLayout'
+import DashboardContent from './pages/dashboard/DashboardContent'
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const App = lazy(() => import('./App'));
 
+const queryClient = new QueryClient()
+
 const router = createBrowserRouter([
-  // ============================================
-  // Rutas SIN Layout (sin header/footer)
-  // ============================================
   {
     path: '/login',
     element: <Login_Register />
@@ -45,34 +47,51 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     )
   },
+  
+  /* 
+    Dashboard Layout - Envuelve todas las rutas del dashboard
+    Proporciona Sidebar + Header automáticamente
+  */
   {
-    path: '/onboarding/formularios',
     element: (
       <ProtectedRoute>
-        <FormulariosForm />
+        <DashboardLayout />
       </ProtectedRoute>
-    )
+    ),
+    children: [
+      {
+        path: '/dashboard',
+        element: <DashboardContent />
+      },
+      // Agrega más rutas aquí que necesiten el mismo layout
+      // {
+      //   path: '/profile',
+      //   element: <ProfilePage />
+      // },
+      // {
+      //   path: '/settings',
+      //   element: <SettingsPage />
+      // }
+    ]
   },
-  {
-    path: '/dashboard',
-    element: (
-      <ProtectedRoute requiredRole="consumidor">
-        <h1>Consumer Dashboard</h1>
-      </ProtectedRoute>
-    )
-  },
-  {
+
+  /* Dashboard para Admin (si lo necesitas separado) */
+  /*{
     path: '/admin/dashboard',
     element: (
       <ProtectedRoute requiredRole="administrador">
-        <h1>Admin Dashboard</h1>
+        <DashboardLayout />
       </ProtectedRoute>
-    )
-  },
-  
-  // ============================================
-  // Rutas CON Layout (con header/footer de landing page)
-  // ============================================
+    ),
+    children: [
+      {
+        index: true,
+        element: <AdminDashboardContent />
+      }
+    ]
+  },*/
+
+  /* Rutas públicas con NavBar y Footer */
   {
     element: <App />,
     children: [
@@ -85,12 +104,13 @@ const router = createBrowserRouter([
         element: <h1>Hola Mundo</h1>
       }
     ]
-  }
+  },
 ])
-
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </StrictMode>,
 )
