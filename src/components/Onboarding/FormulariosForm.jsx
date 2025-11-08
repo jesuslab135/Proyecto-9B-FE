@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/AuthService';
 import { logger } from '../../services/Logger';
-import { http } from '../../utils/api/https';
+import { FormulariosAPI } from '../../utils/api/formularios.client';
 import './OnboardingForms.css';
 
 const FormulariosForm = () => {
@@ -60,19 +60,59 @@ const FormulariosForm = () => {
         throw new Error('Usuario no autenticado');
       }
 
+      // 🔥 Obtener consumidor_id del localStorage (guardado en PhysicalDataForm)
+      const consumidorId = localStorage.getItem('consumidor_id');
+      
+      if (!consumidorId) {
+        throw new Error('No se encontró el ID del consumidor. Por favor completa el paso anterior.');
+      }
+
       logger.info('FormulariosForm: Submitting formularios data');
 
-      await http.post(`/formularios`, {
-        usuario_id: currentUser.id,
+      const dataToSend = {
+        consumidor: parseInt(consumidorId, 10),  // ✅ Backend espera 'consumidor', no 'consumidor_id'
         ...formData,
-      });
+      };
+
+      // ✅ PASO 1: Verificar si ya existe un formulario para este consumidor
+      let formularioExists = false;
+      let existingFormularioId = null;
+
+      try {
+        const formulariosList = await FormulariosAPI.list({ consumidor: parseInt(consumidorId, 10) });
+        if (formulariosList && formulariosList.length > 0) {
+          formularioExists = true;
+          existingFormularioId = formulariosList[0].id;
+          logger.info('FormulariosForm: Formulario already exists, will UPDATE', { formulario_id: existingFormularioId });
+        }
+      } catch {
+        logger.info('FormulariosForm: No existing formulario found, will CREATE');
+      }
+
+      // ✅ PASO 2: CREATE o UPDATE según corresponda
+      if (formularioExists && existingFormularioId) {
+        logger.info('FormulariosForm: Updating formulario', { formulario_id: existingFormularioId });
+        await FormulariosAPI.patch(existingFormularioId, dataToSend);
+      } else {
+        logger.info('FormulariosForm: Creating new formulario');
+        await FormulariosAPI.create(dataToSend);
+      }
 
       logger.info('FormulariosForm: Formularios data saved successfully');
 
       navigate('/dashboard');
     } catch (error) {
       logger.error('FormulariosForm: Error saving formularios data', error);
-      setError('Error al guardar los datos. Por favor intente nuevamente.');
+      
+      let errorMessage = 'Error al guardar los datos. Por favor intente nuevamente.';
+      
+      if (error.message.includes('No se encontró el ID del consumidor')) {
+        errorMessage = error.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

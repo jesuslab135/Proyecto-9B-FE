@@ -27,6 +27,7 @@ export const API = {
     desiresTracking: "dashboard/desires-tracking",
     desiresStats: "dashboard/desires-stats",
     dailySummary: "dashboard/daily-summary",
-    weeklyComparison: "dashboard/weekly-comparison",
+    weeklyComparison: "dashboard/weekly-comparison",  
+    heartRateToday: "dashboard/heart-rate-today"
   },
 };
