@@ -121,7 +121,7 @@ export default function Sidebar() {
         >
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 {/* Toggle Button */}
-                <div style={{ padding: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+                <div style={{ padding: '16px 16px 8px 16px', display: 'flex', justifyContent: 'flex-end' }}>
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         style={{
@@ -154,7 +154,7 @@ export default function Sidebar() {
                 </div>
 
                 {/* Navigation Menu */}
-                <nav style={{ flex: 1, padding: '0 12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <nav style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {menuItems.map((item, index) => {
                         const isActive = location.pathname === item.path;
                         return (
@@ -165,32 +165,56 @@ export default function Sidebar() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '16px',
-                                    padding: '12px 16px',
+                                    padding: '10px 16px',
                                     borderRadius: '8px',
                                     textDecoration: 'none',
                                     color: 'white',
                                     background: isActive ? '#00C4B4' : 'transparent',
                                     boxShadow: isActive ? '0 10px 15px -3px rgba(0, 0, 0, 0.1)' : 'none',
-                                    transform: isActive ? 'scale(1.05)' : 'scale(1)',
-                                    transition: 'all 0.3s'
+                                    transition: 'all 0.3s',
+                                    position: 'relative',
+                                    width: '100%',
+                                    boxSizing: 'border-box'
                                 }}
-                                onMouseOver={(e) => {
-                                    if (!isActive) e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                                onMouseEnter={(e) => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                                    }
                                 }}
-                                onMouseOut={(e) => {
-                                    if (!isActive) e.target.style.background = 'transparent';
+                                onMouseLeave={(e) => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.background = 'transparent';
+                                    }
                                 }}
                             >
-                                <span style={{ color: isActive ? 'white' : '#81D4FA', flexShrink: 0 }}>
+                                <span style={{ 
+                                    color: isActive ? 'white' : '#81D4FA', 
+                                    flexShrink: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '24px',
+                                    height: '24px'
+                                }}>
                                     {item.icon}
                                 </span>
                                 {!isCollapsed && (
-                                    <span style={{ fontWeight: 500 }}>{item.name}</span>
+                                    <span style={{ 
+                                        fontWeight: 500,
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis'
+                                    }}>
+                                        {item.name}
+                                    </span>
                                 )}
                             </Link>
                         );
                     })}
                 </nav>
+
+                {/* Spacer to push user info to bottom */}
+                <div style={{ flex: 1 }}></div>
 
                 {/* User Info at Bottom */}
                 <div style={{ 
