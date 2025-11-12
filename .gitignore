@@ -1,6 +1,9 @@
 # Node modules
 node_modules/
 
+# Dependencies installed by package managers
+package-lock.json
+
 # Build output
 dist/
 build/
