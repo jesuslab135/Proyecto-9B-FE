@@ -5,7 +5,7 @@ import "./DashboardHR.css";
 export default function DashboardHR() {
   // Obtener el usuario autenticado
   const user = authService.getCurrentUser();
-  const consumidorId = 1; // Fallback a 1 si no hay usuario
+  const consumidorId = user?.consumidor_id || 1;
   
   // Usar el nuevo endpoint que trae datos del día actual
   const { data: todayData, isLoading, error } = useHeartRateToday(consumidorId);

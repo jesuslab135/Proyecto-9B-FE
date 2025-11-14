@@ -12,3 +12,7 @@ export const useDesiresStats      = (consumidor_id) => useQueryHelper(["dash","d
 export const useDailySummary      = (consumidor_id) => useQueryHelper(["dash","daily", consumidor_id||"all"], () => DashboardAPI.dailySummary(consumidor_id?{consumidor_id}:undefined));
 export const useWeeklyComparison  = (consumidor_id) => useQueryHelper(["dash","weekly", consumidor_id||"all"], () => DashboardAPI.weeklyComparison(consumidor_id?{consumidor_id}:undefined));
 export const useHeartRateToday    = (consumidor_id) => useQueryHelper(["dash","hrToday", consumidor_id||"all"], () => DashboardAPI.heartRateToday(consumidor_id?{consumidor_id}:undefined));
+export const useActiveWindow      = (consumidor_id) => useQueryHelper(["dash","activeWindow", consumidor_id||"all"], () => DashboardAPI.activeWindow(consumidor_id?{consumidor_id}:undefined));
+export const useSensorData        = (consumidor_id) => useQueryHelper(["dash","sensorData", consumidor_id||"all"], () => DashboardAPI.sensorData(consumidor_id?{consumidor_id}:undefined));
+export const useHabitStats        = (consumidor_id) => useQueryHelper(["dash","habitStats", consumidor_id||"all"], () => DashboardAPI.habitStats(consumidor_id?{consumidor_id}:undefined));
+export const useHabitTracking     = (consumidor_id) => useQueryHelper(["dash","habitTrack", consumidor_id||"all"], () => DashboardAPI.habitTracking(consumidor_id?{consumidor_id}:undefined));
