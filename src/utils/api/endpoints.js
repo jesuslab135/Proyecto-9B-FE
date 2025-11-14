@@ -1,3 +1,4 @@
+
 export const API = {
   usuarios: "usuarios",
   usLogin: "usuarios/login",
@@ -28,6 +29,8 @@ export const API = {
     desiresStats: "dashboard/desires-stats",
     dailySummary: "dashboard/daily-summary",
     weeklyComparison: "dashboard/weekly-comparison",  
-    heartRateToday: "dashboard/heart-rate-today"
+    heartRateToday: "dashboard/heart-rate-today",
+    activeWindow: "dashboard/active-window",
+    sensorData: "dashboard/sensor-data",
   },
 };

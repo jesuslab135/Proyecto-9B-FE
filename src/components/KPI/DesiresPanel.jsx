@@ -5,7 +5,7 @@ import "./DesiresPanel.css";
 export default function DesiresPanel() {
   // Obtener el usuario autenticado
   const user = authService.getCurrentUser();
-  const consumidorId = 1; // Fallback a 1 si no hay usuario
+  const consumidorId = user?.consumidor_id || 1;
   
   const { data: stats, isLoading } = useDesiresStats(consumidorId);
   const { data: track } = useDesiresTracking(consumidorId);

@@ -31,4 +31,11 @@ export const DashboardAPI = {
   dailySummary:      (p) => get(API.dashboard.dailySummary, p),
   weeklyComparison:  (p) => get(API.dashboard.weeklyComparison, p),
   heartRateToday:   (p) => get(API.dashboard.heartRateToday, p),
+
+  activeWindow: (p) => get(API.ventanas, { 
+    ...p, 
+    ordering: '-window_start',
+    limit: 1
+  }),
+  sensorData:       (p) => get(API.dashboard.sensorData, p),
 };
