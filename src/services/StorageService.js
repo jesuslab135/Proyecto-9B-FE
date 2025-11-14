@@ -1,4 +1,5 @@
 
+
 import { logger } from './Logger';
 
 class StorageService {
@@ -116,6 +117,7 @@ class StorageService {
     this._removeItem(this.KEYS.REFRESH_TOKEN);
     this._removeItem(this.KEYS.USER);
     this._removeItem(this.KEYS.TOKEN_EXPIRY);
+    window.location.href = "/login";
   }
 
 

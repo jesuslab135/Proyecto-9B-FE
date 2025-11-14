@@ -266,6 +266,7 @@ const LoginRegister = () => {
                         </div>
                         <div className="input-box">
                             <input 
+                            id="email-register"
                               type="email" 
                               name="email"
                               placeholder="Email" 
@@ -278,9 +279,10 @@ const LoginRegister = () => {
                         </div>
                         <div className="input-box">
                             <input 
+                            id="tel-register"
                               type="tel" 
                               name="telefono"
-                              placeholder="Teléfono (opcional)" 
+                              placeholder="Teléfono" 
                               value={registerData.telefono}
                               onChange={handleRegisterChange}
                               disabled={isLoading}
@@ -289,6 +291,7 @@ const LoginRegister = () => {
                         </div>
                         <div className="input-box">
                             <input 
+                              id="password-register"
                               type="password" 
                               name="password"
                               placeholder="Password" 
@@ -303,6 +306,7 @@ const LoginRegister = () => {
                           type="submit" 
                           className="btn"
                           disabled={isLoading}
+                          id="register-submit"
                         >
                           {isLoading ? 'Cargando...' : 'Register'}
                         </button>
@@ -321,7 +325,7 @@ const LoginRegister = () => {
                     <div className="toggle-panel toggle-left">
                         <h1>Hello, Welcome!</h1>
                         <p>Don't have an account?</p>
-                        <button className="btn register-btn" disabled={isLoading}>Register</button>
+                        <button id="register-button" className="btn register-btn" disabled={isLoading}>Register</button>
                     </div>
                     <div className="toggle-panel toggle-right">
                         <h1>Welcome Back!</h1>
