@@ -3,6 +3,30 @@
 const { By, until } = require('selenium-webdriver');
 
 /**
+ * Inicia sesión como administrador usando credenciales provistas o variables de entorno.
+ */
+async function loginAsAdmin(driver, creds = {}) {
+    const email = creds.email || process.env.ADMIN_EMAIL || 'admin@example.com';
+    const password = creds.password || process.env.ADMIN_PASS || 'adminpass';
+
+    const base = process.env.TEST_BASE_URL || 'http://localhost:5173';
+    await driver.get(`${base}/login`);
+
+    // Esperar inputs de login
+    await driver.wait(until.elementLocated(By.css('.form-box.login input[name="email"]')), 10000);
+    await driver.findElement(By.css('.form-box.login input[name="email"]')).sendKeys(email);
+    await driver.findElement(By.css('.form-box.login input[name="password"]')).sendKeys(password);
+
+    // Enviar formulario
+    await driver.findElement(By.css('.form-box.login button[type="submit"]')).click();
+
+    // Pequeña espera para que el login avance (se usan waits explícitos en los tests después)
+    await driver.sleep(1000);
+
+    return { email, password };
+}
+
+/**
  * Genera un email único basado en timestamp
  */
 function generateUniqueEmail() {
@@ -608,4 +632,6 @@ module.exports = {
     generateRandomWeight,
     generateRandomHeight,
     generateRandomCommitmentLevel
+    ,
+    loginAsAdmin
 };
