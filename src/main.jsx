@@ -11,6 +11,7 @@ import Habits from './pages/onboarding/Habits'
 import Results from './pages/onboarding/Results'
 import DashboardLayout from './components/layouts/DashboardLayout'
 import DashboardContent from './pages/dashboard/DashboardContent'
+import AdminDashboardContent from './pages/admin/AdminDashboardContent'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
@@ -76,7 +77,7 @@ const router = createBrowserRouter([
   },
 
   /* Dashboard para Admin (si lo necesitas separado) */
-  /*{
+  {
     path: '/admin/dashboard',
     element: (
       <ProtectedRoute requiredRole="administrador">
@@ -89,7 +90,7 @@ const router = createBrowserRouter([
         element: <AdminDashboardContent />
       }
     ]
-  },*/
+  },
 
   /* Rutas públicas con NavBar y Footer */
   {
