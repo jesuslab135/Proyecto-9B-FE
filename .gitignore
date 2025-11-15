@@ -29,4 +29,9 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Test screenshots
+screenshots/
+*.png
+error-*.png
+
 # Optional: coverage reports
