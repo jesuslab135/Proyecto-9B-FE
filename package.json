@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "mocha \"src/specs/**/*.test.cjs\"",
+    "test:watch": "mocha src/specs/**/*.test.cjs --watch"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.2",
@@ -47,6 +49,7 @@
     "embla-carousel-react": "^8.5.2",
     "input-otp": "^1.4.1",
     "lucide-react": "^0.468.0",
+    "mocha": "^11.7.5",
     "postcss": "^8.5.6",
     "react": "^19.1.1",
     "react-day-picker": "^9.4.3",
@@ -62,6 +65,7 @@
     "tailwindcss": "^4.1.14",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
+    "webdriver-manager": "^12.1.9",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -70,6 +74,7 @@
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.21",
+    "chromedriver": "^142.0.2",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
