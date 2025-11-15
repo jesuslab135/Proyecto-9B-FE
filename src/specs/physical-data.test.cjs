@@ -3,7 +3,8 @@ const chrome = require('selenium-webdriver/chrome');
 const { 
     completeRegistrationForm, 
     completePhysicalDataForm,
-    captureErrorScreenshot 
+    captureErrorScreenshot,
+    captureTestResults 
 } = require('./helpers.cjs');
 
 describe('Physical Data Form', function() {
@@ -30,6 +31,7 @@ describe('Physical Data Form', function() {
 
     it('should complete registration and physical data form successfully', async function() {
         this.timeout(90000);
+        const startTime = Date.now();
         
         try {
             console.log('\n========== TEST: REGISTRO + DATOS FÍSICOS ==========');
@@ -50,7 +52,12 @@ describe('Physical Data Form', function() {
             console.log(`✓ Datos físicos guardados - Redirigido a: ${currentUrl}`);
             console.log('=====================================================\n');
             
+            const duration = Date.now() - startTime;
+            captureTestResults('physical-data-complete-flow', true, duration);
+            
         } catch (error) {
+            const duration = Date.now() - startTime;
+            captureTestResults('physical-data-complete-flow', false, duration);
             await captureErrorScreenshot(driver, 'error-physical-data.png');
             console.error('Mensaje de error:', error.message);
             throw error;

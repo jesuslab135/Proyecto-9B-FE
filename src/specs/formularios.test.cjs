@@ -5,7 +5,8 @@ const {
     completePhysicalDataForm,
     completeFormulariosForm,
     completeResultsPage, 
-    captureErrorScreenshot 
+    captureErrorScreenshot,
+    captureTestResults 
 } = require('./helpers.cjs');
 
 describe('Formularios Form - Complete Flow', function() {
@@ -32,6 +33,7 @@ describe('Formularios Form - Complete Flow', function() {
 
     it('should complete full registration flow including formularios and results', async function() {
         this.timeout(180000);
+        const startTime = Date.now();
         
         try {
             console.log('\n========== TEST: FLUJO COMPLETO (REGISTRO + FÍSICOS + HÁBITOS + RESULTADOS) ==========');
@@ -65,7 +67,12 @@ describe('Formularios Form - Complete Flow', function() {
             console.log(`✓✓✓ FLUJO COMPLETO EXITOSO - URL final: ${finalUrl}`);
             console.log('====================================================================================\n');
             
+            const duration = Date.now() - startTime;
+            captureTestResults('formularios-complete-flow', true, duration);
+            
         } catch (error) {
+            const duration = Date.now() - startTime;
+            captureTestResults('formularios-complete-flow', false, duration);
             await captureErrorScreenshot(driver, 'error-formularios-complete.png');
             console.error('Mensaje de error:', error.message);
             throw error;

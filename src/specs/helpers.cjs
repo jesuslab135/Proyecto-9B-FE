@@ -105,6 +105,60 @@ function getRandomOption(options) {
 }
 
 /**
+ * Completa el formulario de login
+ */
+async function completeLoginForm(driver, customData = {}) {
+    const loginData = {
+        email: customData.email || 'perdomo@gmail.com',
+        password: customData.password || 'Dio$ama135'
+    };
+
+    console.log('→ Completando formulario de login...');
+    await driver.sleep(2000);
+    
+    // Screenshot: Página inicial de login
+    await captureScreenshot(driver, 'screenshots/login-01-pagina-inicial.png');
+    
+    // Asegurarse de que estamos en la vista de login (no registro)
+    try {
+        // Verificar si el formulario de login está visible
+        const loginForm = await driver.findElement(By.css('.form-box.login'));
+        const isDisplayed = await loginForm.isDisplayed();
+        
+        if (!isDisplayed) {
+            // Si no está visible, hacer clic en el botón "Login" para cambiar de vista
+            console.log('  → Cambiando a vista de login...');
+            await driver.findElement(By.css('.login-btn')).click();
+            await driver.sleep(1000);
+            await captureScreenshot(driver, 'screenshots/login-02-cambio-vista.png');
+        }
+    } catch (e) {
+        console.log('  → Formulario de login ya visible');
+    }
+    
+    // Llenar el formulario de login
+    await driver.findElement(By.css('.form-box.login input[name="email"]')).sendKeys(loginData.email);
+    await driver.findElement(By.css('.form-box.login input[name="password"]')).sendKeys(loginData.password);
+    
+    console.log(`  ✓ Credenciales ingresadas:`);
+    console.log(`    - Email: ${loginData.email}`);
+    console.log(`    - Password: ${'*'.repeat(loginData.password.length)}`);
+    
+    // Screenshot: Formulario completado
+    await captureScreenshot(driver, 'screenshots/login-03-formulario-completado.png');
+    
+    // Enviar formulario
+    await driver.findElement(By.css('.form-box.login button[type="submit"]')).click();
+    console.log('  ✓ Formulario de login enviado');
+    await driver.sleep(2000);
+    
+    // Screenshot: Después de enviar
+    await captureScreenshot(driver, 'screenshots/login-04-despues-enviar.png');
+    
+    return loginData;
+}
+
+/**
  * Completa el formulario de registro con datos únicos
  */
 async function completeRegistrationForm(driver, customData = {}) {
@@ -118,10 +172,16 @@ async function completeRegistrationForm(driver, customData = {}) {
     console.log('→ Completando formulario de registro...');
     await driver.sleep(2000);
     
+    // Screenshot: Página inicial
+    await captureScreenshot(driver, 'screenshots/registro-01-pagina-inicial.png');
+    
     // Hacer clic en el botón Register
     await driver.findElement(By.css('.register-btn')).click();
     console.log('  ✓ Botón Register clickeado');
     await driver.sleep(1000);
+    
+    // Screenshot: Vista de registro
+    await captureScreenshot(driver, 'screenshots/registro-02-vista-registro.png');
     
     // Llenar formulario
     await driver.findElement(By.css('.form-box.register input[name="nombre"]')).sendKeys(testData.nombre);
@@ -134,9 +194,16 @@ async function completeRegistrationForm(driver, customData = {}) {
     console.log(`    - Teléfono: ${testData.telefono}`);
     console.log(`    - Password: ${testData.password}`);
     
+    // Screenshot: Formulario completado
+    await captureScreenshot(driver, 'screenshots/registro-03-formulario-completado.png');
+    
     // Enviar formulario
     await driver.findElement(By.css('.form-box.register button[type="submit"]')).click();
     console.log('  ✓ Formulario enviado');
+    await driver.sleep(2000);
+    
+    // Screenshot: Después de enviar
+    await captureScreenshot(driver, 'screenshots/registro-04-despues-enviar.png');
     
     return testData;
 }
@@ -157,6 +224,9 @@ async function completePhysicalDataForm(driver, customData = {}) {
     await driver.wait(until.elementLocated(By.id('edad')), 10000);
     await driver.sleep(1000);
     
+    // Screenshot: Formulario inicial
+    await captureScreenshot(driver, 'screenshots/fisicos-01-formulario-inicial.png');
+    
     await driver.findElement(By.id('edad')).sendKeys(physicalData.edad);
     await driver.findElement(By.id('peso')).sendKeys(physicalData.peso);
     await driver.findElement(By.id('altura')).sendKeys(physicalData.altura);
@@ -165,16 +235,20 @@ async function completePhysicalDataForm(driver, customData = {}) {
     console.log(`    - Peso: ${physicalData.peso} kg`);
     console.log(`    - Altura: ${physicalData.altura} cm`);
     
+    // Screenshot: Formulario completado
+    await captureScreenshot(driver, 'screenshots/fisicos-02-formulario-completado.png');
+    
     // Enviar formulario
     await driver.findElement(By.css('button[type="submit"].btn-primary')).click();
     console.log('  ✓ Formulario enviado');
+    await driver.sleep(2000);
+    
+    // Screenshot: Después de enviar
+    await captureScreenshot(driver, 'screenshots/fisicos-03-despues-enviar.png');
     
     return physicalData;
 }
 
-/**
- * Completa el formulario de hábitos/formularios con datos variados
- */
 /**
  * Completa el formulario de hábitos/formularios con datos variados
  */
@@ -186,6 +260,9 @@ async function completeFormulariosForm(driver, customData = {}) {
     
     // Esperar a que la página cargue
     await driver.sleep(3000);
+    
+    // Screenshot: Página inicial de hábitos
+    await captureScreenshot(driver, 'screenshots/habitos-01-pagina-inicial.png');
     
     // Detectar qué tipo de formulario es
     console.log('  → Detectando tipo de formulario...');
@@ -229,6 +306,7 @@ async function completeFormulariosForm(driver, customData = {}) {
         }
         
         await driver.sleep(500);
+        await captureScreenshot(driver, 'screenshots/habitos-02-habito-seleccionado.png');
         
         // 2. Seleccionar emoción
         console.log('  → Seleccionando emoción...');
@@ -244,6 +322,7 @@ async function completeFormulariosForm(driver, customData = {}) {
         }
         
         await driver.sleep(500);
+        await captureScreenshot(driver, 'screenshots/habitos-03-emocion-seleccionada.png');
         
         // 3. Seleccionar motivo
         console.log('  → Seleccionando motivo...');
@@ -267,6 +346,7 @@ async function completeFormulariosForm(driver, customData = {}) {
         }
         
         await driver.sleep(500);
+        await captureScreenshot(driver, 'screenshots/habitos-04-motivo-seleccionado.png');
         
         // 4. Seleccionar solución
         console.log('  → Seleccionando solución...');
@@ -297,6 +377,7 @@ async function completeFormulariosForm(driver, customData = {}) {
         }
         
         await driver.sleep(1000);
+        await captureScreenshot(driver, 'screenshots/habitos-05-solucion-seleccionada.png');
         
         // 5. Verificar que todos los campos requeridos estén completos
         console.log('  → Verificando campos requeridos...');
@@ -307,9 +388,7 @@ async function completeFormulariosForm(driver, customData = {}) {
         
         if (hasErrors) {
             console.log('  ⚠ Aún hay campos requeridos, tomando screenshot...');
-            const screenshot = await driver.takeScreenshot();
-            require('fs').writeFileSync('missing-required-fields.png', screenshot, 'base64');
-            console.log('  → Screenshot: missing-required-fields.png');
+            await captureScreenshot(driver, 'screenshots/habitos-06-campos-faltantes.png');
         } else {
             console.log('  ✓ Todos los campos requeridos completados');
         }
@@ -323,10 +402,13 @@ async function completeFormulariosForm(driver, customData = {}) {
         const isEnabled = await finalizarBtn.isEnabled();
         console.log(`    - Botón habilitado: ${isEnabled}`);
         
+        await captureScreenshot(driver, 'screenshots/habitos-07-antes-finalizar.png');
+        
         await finalizarBtn.click();
         console.log('  ✓ Clic en "Finalizar"');
         
         await driver.sleep(3000);
+        await captureScreenshot(driver, 'screenshots/habitos-08-despues-finalizar.png');
         
         // Verificar si hay otro formulario
         currentUrl = await driver.getCurrentUrl();
@@ -369,6 +451,9 @@ async function completeResultsPage(driver) {
     
     await driver.sleep(1500);
     
+    // Screenshot: Página de resultados
+    await captureScreenshot(driver, 'screenshots/resultados-01-pagina-resultados.png');
+    
     // Buscar botón Siguiente
     const siguienteBtn = await driver.findElement(By.css('.btn-next, button.btn-next'));
     
@@ -376,9 +461,17 @@ async function completeResultsPage(driver) {
     await driver.executeScript('arguments[0].scrollIntoView({behavior: "smooth", block: "center"});', siguienteBtn);
     await driver.sleep(500);
     
+    // Screenshot: Antes de hacer clic
+    await captureScreenshot(driver, 'screenshots/resultados-02-antes-siguiente.png');
+    
     // Hacer clic
     await siguienteBtn.click();
     console.log('  ✓ Clic en "Siguiente" exitoso');
+    
+    await driver.sleep(2000);
+    
+    // Screenshot: Después de hacer clic
+    await captureScreenshot(driver, 'screenshots/resultados-03-despues-siguiente.png');
     
     return {};
 }
@@ -392,6 +485,9 @@ async function completeFormulariosFormSelects(driver) {
     await driver.wait(until.elementLocated(By.id('habito_principal')), 15000);
     await driver.sleep(1000);
     
+    // Screenshot: Formulario inicial
+    await captureScreenshot(driver, 'screenshots/selects-01-formulario-inicial.png');
+    
     // Hábito principal
     await driver.findElement(By.id('habito_principal')).sendKeys('fumar');
     console.log('  ✓ Hábito principal');
@@ -403,6 +499,9 @@ async function completeFormulariosFormSelects(driver) {
     // Tiempo de uso
     await driver.findElement(By.id('tiempo_uso')).sendKeys('1_3_anos');
     console.log('  ✓ Tiempo de uso');
+    
+    // Screenshot: Campos básicos completados
+    await captureScreenshot(driver, 'screenshots/selects-02-campos-basicos.png');
     
     // Motivación
     await driver.findElement(By.id('motivacion_cambio')).sendKeys('Quiero mejorar mi salud');
@@ -424,9 +523,17 @@ async function completeFormulariosFormSelects(driver) {
     await driver.findElement(By.id('objetivo_principal')).sendKeys('Dejar de fumar en 6 meses');
     console.log('  ✓ Campos opcionales');
     
+    // Screenshot: Formulario completado
+    await captureScreenshot(driver, 'screenshots/selects-03-formulario-completado.png');
+    
     // Submit
     await driver.findElement(By.css('button[type="submit"].btn-primary')).click();
     console.log('  ✓ Formulario enviado');
+    
+    await driver.sleep(2000);
+    
+    // Screenshot: Después de enviar
+    await captureScreenshot(driver, 'screenshots/selects-04-despues-enviar.png');
     
     return {};
 }
@@ -437,12 +544,73 @@ async function completeFormulariosFormSelects(driver) {
  */
 async function captureErrorScreenshot(driver, filename) {
     try {
+        const fs = require('fs');
+        const path = require('path');
+        
+        // Crear directorio screenshots si no existe
+        const dir = path.dirname(filename);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        
         const screenshot = await driver.takeScreenshot();
-        require('fs').writeFileSync(filename, screenshot, 'base64');
+        fs.writeFileSync(filename, screenshot, 'base64');
         console.error(`❌ Screenshot guardado como ${filename}`);
     } catch (err) {
         console.error('No se pudo capturar el screenshot:', err.message);
     }
+}
+
+/**
+ * Captura un screenshot normal (no error)
+ */
+async function captureScreenshot(driver, filename) {
+    try {
+        const fs = require('fs');
+        const path = require('path');
+        
+        // Crear directorio screenshots si no existe
+        const dir = path.dirname(filename);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        
+        const screenshot = await driver.takeScreenshot();
+        fs.writeFileSync(filename, screenshot, 'base64');
+        console.log(`📸 Screenshot: ${filename}`);
+    } catch (err) {
+        console.error('No se pudo capturar el screenshot:', err.message);
+    }
+}
+
+/**
+ * Captura un screenshot de los resultados finales de las pruebas
+ */
+function captureTestResults(testName, passed, duration) {
+    const fs = require('fs');
+    
+    // Crear directorio screenshots si no existe
+    if (!fs.existsSync('screenshots')) {
+        fs.mkdirSync('screenshots', { recursive: true });
+    }
+    
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const status = passed ? '✅ PASSED' : '❌ FAILED';
+    const filename = `screenshots/test-results-${testName}-${timestamp}.txt`;
+    
+    const content = `
+========================================
+TEST RESULTS
+========================================
+Test: ${testName}
+Status: ${status}
+Duration: ${duration}ms
+Timestamp: ${new Date().toISOString()}
+========================================
+`;
+    
+    fs.writeFileSync(filename, content);
+    console.log(`📋 Resultados guardados: ${filename}`);
 }
 
 module.exports = {
@@ -450,8 +618,11 @@ module.exports = {
     completePhysicalDataForm,
     completeFormulariosForm,
     captureErrorScreenshot,
+    captureScreenshot,
+    captureTestResults,
     completeFormulariosFormSelects,
     completeResultsPage,
+    completeLoginForm,
     // Exportar funciones auxiliares por si se necesitan
     generateUniqueEmail,
     generateRandomName,
