@@ -12,7 +12,7 @@ describe('Login Tests', function() {
     // Credenciales de usuario de prueba existente
     const VALID_CREDENTIALS = {
         email: 'perdomo@gmail.com',
-        password: 'Dio$ama135'
+        password: process.env.TEST_PASSWORD
     };
 
     beforeEach(async function() {
@@ -86,7 +86,7 @@ describe('Login Tests', function() {
             // Intentar login con credenciales incorrectas
             await completeLoginForm(driver, {
                 email: 'usuario_inexistente@example.com',
-                password: 'password_incorrecta123'
+                password: process.env.TEST_PASSWORD
             });
             
             // Esperar a que aparezca el mensaje de error
@@ -214,7 +214,7 @@ describe('Login Tests', function() {
             // Ingresar email con formato inválido
             console.log('→ Ingresando email con formato inválido...');
             await driver.findElement(By.css('.form-box.login input[name="email"]')).sendKeys('email_invalido_sin_arroba');
-            await driver.findElement(By.css('.form-box.login input[name="password"]')).sendKeys('password123');
+            await driver.findElement(By.css('.form-box.login input[name="password"]')).sendKeys(process.env.TEST_PASSWORD);
             
             // Intentar enviar
             await driver.findElement(By.css('.form-box.login button[type="submit"]')).click();
@@ -264,7 +264,7 @@ describe('Login Tests', function() {
             // Usar email correcto pero password incorrecta
             await completeLoginForm(driver, {
                 email: VALID_CREDENTIALS.email,
-                password: 'PasswordIncorrecta123!'
+                password: process.env.TEST_PASSWORD
             });
             
             // Esperar mensaje de error
