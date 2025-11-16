@@ -12,7 +12,7 @@ describe('Login Tests', function() {
     // Credenciales de usuario de prueba existente
     const VALID_CREDENTIALS = {
         email: 'perdomo@gmail.com',
-        password: process.env.TEST_PASSWORD
+        password: process.env.Scretdkfkfkfk
     };
 
     beforeEach(async function() {
@@ -86,7 +86,7 @@ describe('Login Tests', function() {
             // Intentar login con credenciales incorrectas
             await completeLoginForm(driver, {
                 email: 'usuario_inexistente@example.com',
-                password: process.env.TEST_PASSWORD
+                password: process.env.Scretdkfkfkfk
             });
             
             // Esperar a que aparezca el mensaje de error
@@ -264,7 +264,8 @@ describe('Login Tests', function() {
             // Usar email correcto pero password incorrecta
             await completeLoginForm(driver, {
                 email: VALID_CREDENTIALS.email,
-                password: process.env.TEST_PASSWORD
+                // process.env.TEST_PASSWORD
+                password: process.env.Scretdkfkfkfk
             });
             
             // Esperar mensaje de error
