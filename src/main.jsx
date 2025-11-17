@@ -12,6 +12,9 @@ import Results from './pages/onboarding/Results'
 import DashboardLayout from './components/layouts/DashboardLayout'
 import DashboardContent from './pages/dashboard/DashboardContent'
 import AdminDashboardContent from './pages/admin/AdminDashboardContent'
+import MiProgresoPage from './pages/progress/MiProgreso';
+import ConfiguracionPage from './pages/settings/Configuracion';
+
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
@@ -64,6 +67,14 @@ const router = createBrowserRouter([
         path: '/dashboard',
         element: <DashboardContent />
       },
+      {
+        path: '/progress',
+        element: <MiProgresoPage />
+      },
+      {
+        path: '/configuration',  
+        element: <ConfiguracionPage />
+      }
       // Agrega más rutas aquí que necesiten el mismo layout
       // {
       //   path: '/profile',

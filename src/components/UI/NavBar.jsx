@@ -9,9 +9,7 @@ const NavBar = () => {
                     <div className="logo">Addictless</div>
                     <ul className="nav-links active">
                         <li>
-                            <Link to="/" replace>
-                                <a href="#home">Home</a>
-                            </Link>
+                            <a href="#home">Home</a>
                         </li>
                         <li>
                             <a href="#features">Features</a>

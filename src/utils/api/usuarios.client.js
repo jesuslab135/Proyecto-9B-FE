@@ -10,4 +10,6 @@ export const UsuariosAPI = {
   remove:(id)           => r.remove(API.usuarios, id),
   login: (email, password) => r.post(API.usLogin, { email, password }),
   register: (userData) => r.post(API.usRegister, userData),
+  softDelete: (id)     => r.action(API.usSoftDelete, id, 'soft-delete'),
+  restore: (id)        => r.action(API.usRestore, id, 'restore'),
 };
