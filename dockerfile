@@ -7,7 +7,7 @@ FROM base AS deps
 COPY package.json package-lock.json* ./
 
 # Instalar dependencias
-RUN npm ci
+RUN npm i
 
 # ==================== DEVELOPMENT ====================
 FROM base AS development

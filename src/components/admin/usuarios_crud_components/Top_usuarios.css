@@ -1,0 +1,45 @@
+.container-top-usuarios-crud {
+    display: flex;
+    padding: 2rem;
+    width: 100%;
+    justify-content: start;
+    align-items: center;
+}
+
+.icon-and-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 6rem;
+    height: 5rem;
+    background-color: #4A90E2;
+    border-radius: 15px;
+}
+
+.icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.titles {
+    display: flex;
+    flex-direction: column;
+}
+
+.titles h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.titles h3 {
+    font-size: 1rem;
+    color: #666666;
+    margin: 0;
+}

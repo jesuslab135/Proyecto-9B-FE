@@ -17,6 +17,7 @@ import ConfiguracionPage from './pages/settings/Configuracion';
 
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import CRUD_usuarios from './pages/admin/usuarios/CRUD_usuarios'
 
 const App = lazy(() => import('./App'));
 
@@ -89,7 +90,6 @@ const router = createBrowserRouter([
 
   /* Dashboard para Admin (si lo necesitas separado) */
   {
-    path: '/admin/dashboard',
     element: (
       <ProtectedRoute requiredRole="administrador">
         <DashboardLayout />
@@ -97,8 +97,12 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        index: true,
-        element: <AdminDashboardContent />
+        path: '/admin/dashboard',
+        element: <AdminDashboardContent />,
+      },
+      {
+        path: '/admin/usuarios',
+        element: <CRUD_usuarios />
       }
     ]
   },

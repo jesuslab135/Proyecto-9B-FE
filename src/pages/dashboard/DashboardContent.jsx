@@ -47,7 +47,7 @@ export default function DashboardContent() {
               fontSize: '16px',
               margin: 0
             }}>
-              Aquí está tu resumen de hoy
+              Aquí está tu resumen de hoy.
             </p>
           </div>
           <div style={{ display: window.innerWidth < 768 ? 'none' : 'block' }}>

@@ -8,7 +8,7 @@ export default function AdminDashboardContent() {
   const { user } = useAuth();
 
   return (
-    <div className="container mx-auto px-6 py-8">
+    <div className="block w-full h-full mx-auto px-6 py-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Panel de Administración</h1>
         <p className="text-sm text-gray-600">Usuario: {user?.nombre} — Rol: {user?.rol}</p>
