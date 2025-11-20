@@ -67,6 +67,10 @@ class StorageService {
 
 
   setToken(token, expiresIn = null) {
+    // Debug: Verificar el formato del token
+    console.log('💾 Storing token:', token?.substring(0, 30) + '...');
+    console.log('⏰ Token expires in:', expiresIn, 'seconds');
+    
     const success = this._setItem(this.KEYS.TOKEN, token);
     
     if (success && expiresIn) {

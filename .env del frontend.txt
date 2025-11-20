@@ -1,0 +1,14 @@
+# .env
+# Variables de entorno para frontend
+
+# ===== BACKEND API =====
+VITE_API_BASE_URL=http://localhost:8000/api
+
+# ===== APP CONFIG =====
+VITE_APP_NAME=Addictless
+NGINX_PORT=80
+
+REACT_APP_WS_URL=localhost:8000
+# ===== USO =====
+# Desarrollo:  docker-compose --profile dev up -d
+# Producción:  docker-compose --profile prod up -d --build

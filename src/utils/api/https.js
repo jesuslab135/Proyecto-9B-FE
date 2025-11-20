@@ -18,7 +18,11 @@ http.interceptors.request.use(
     const token = localStorage.getItem("auth_token");
     
     if (token) {
+      // Debug: Log para verificar que el token se está enviando
+      console.log('🔑 Sending token:', token.substring(0, 20) + '...');
       cfg.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn('⚠️ No auth token found in localStorage');
     }
     return cfg;
   },
