@@ -58,6 +58,7 @@
 
 .table-container {
     margin-top: 1rem;
+    min-height: 75vh;
     overflow-x: auto;
     padding: 1rem;
     background: white;
@@ -151,7 +152,7 @@
 .pagination-container {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: end;
     margin-top: 1rem;
     gap: 2rem;
 }

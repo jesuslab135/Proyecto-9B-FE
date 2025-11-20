@@ -1,56 +1,43 @@
 import "./Table_users.css";
+import React, {useState, useEffect} from "react";
+import Pagination from "../../../components/Global_components/Pagination";
 
 const Table_users = () => {
-  const users = [
-    {
-      id: 1,
-      name: "Juan Pérez",
-      email: "gagor203@gmnial.com",
-      status: "Activo",
-      role: "Administrador",
-      cellphone: "555-1234",
-    },
-    {
-      id: 1,
-      name: "Juan Pérez",
-      email: "gagor203@gmnial.com",
-      status: "Activo",
-      role: "Administrador",
-      cellphone: "555-1234",
-    },
-    {
-      id: 1,
-      name: "Juan Pérez",
-      email: "gagor203@gmnial.com",
-      status: "Activo",
-      role: "Administrador",
-      cellphone: "555-1234",
-    },
-    {
-      id: 1,
-      name: "Juan Pérez",
-      email: "gagor203@gmnial.com",
-      status: "Activo",
-      role: "Administrador",
-      cellphone: "555-1234",
-    },
-    {
-      id: 1,
-      name: "Juan Pérez",
-      email: "gagor203@gmnial.com",
-      status: "Activo",
-      role: "Administrador",
-      cellphone: "555-1234",
-    },
-    {
-      id: 1,
-      name: "Juan Pérez",
-      email: "gagor203@gmnial.com",
-      status: "Activo",
-      role: "Administrador",
-      cellphone: "555-1234",
-    },
-  ];
+
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  const itemsPerPage = 5;
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        
+        const response = await fetch("http://127.0.0.1:8000/api/usuarios/");
+        const json = await response.json();
+        setUsers(json);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+    // console.log('q se imprime:', json);
+  }, []);
+
+  if (loading) {
+    return <div>Cargando usuarios...</div>;
+  }
+
+  // Math.ceil redondea hacia arriba al entero más cercano
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+
+  // Calcular qué datos mostrar
+  const start = (page - 1) * itemsPerPage;
+  const paginatedData = users.slice(start, start + itemsPerPage);
 
   return (
     <>
@@ -81,7 +68,7 @@ const Table_users = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((users, index) => (
+              {paginatedData.map((users, index) => (
                 <tr key={index}>
                   <td>
                     <p>{users.id}</p>
@@ -108,23 +95,14 @@ const Table_users = () => {
             </tbody>
           </table>
           <div className="pagination-container">
-            <button className="pagination">
-              <p>Anterior</p>
-            </button>
-            <button className="pagination active">
-              <p>1</p>
-            </button>
-            <button className="pagination">
-              <p>2</p>
-            </button>
-            <button className="pagination">
-              <p>3</p>
-            </button>
-            <button className="pagination">
-              <p>Siguiente</p>
-            </button>
-          </div>
+            <Pagination 
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          />
         </div>
+        </div>
+        
       </div>
     </>
   );
