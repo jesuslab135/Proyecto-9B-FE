@@ -1,3 +1,4 @@
+/* CACHE_BUST_v3_20251121 */
 import { useEffect, useState } from 'react';
 import { 
   useDesiresTracking, 
@@ -25,11 +26,22 @@ export default function MiProgreso() {
   const consumidorId = user?.consumidor_id || 1;
   
   // Fetch all necessary data with individual loading states
-  const { data: desiresTracking, isLoading: loadingTracking } = useDesiresTracking(consumidorId);
-  const { data: desiresStats, isLoading: loadingStats } = useDesiresStats(consumidorId);
-  const { data: weeklyComparison, isLoading: loadingWeekly } = useWeeklyComparison(consumidorId);
-  const { data: predictionTimeline, isLoading: loadingPredictions } = usePredictionTimeline(consumidorId);
-  const { data: heartRateStats, isLoading: loadingHR } = useHeartRateStats(consumidorId);
+  const { data: desiresTracking, isLoading: loadingTracking, error: errorTracking } = useDesiresTracking(consumidorId);
+  const { data: desiresStats, isLoading: loadingStats, error: errorStats } = useDesiresStats(consumidorId);
+  const { data: weeklyComparison, isLoading: loadingWeekly, error: errorWeekly } = useWeeklyComparison(consumidorId);
+  const { data: predictionTimeline, isLoading: loadingPredictions, error: errorPredictions } = usePredictionTimeline(consumidorId);
+  const { data: heartRateStats, isLoading: loadingHR, error: errorHR } = useHeartRateStats(consumidorId);
+  
+  // Debug: Log data status [CACHE_BREAK_v2]
+  console.log('🔍 MiProgreso Data Status:', {
+    desiresTracking: desiresTracking?.length || 0,
+    desiresStats: desiresStats?.length || 0,
+    desiresStatsRaw: desiresStats?.[0], // Log raw data to inspect structure
+    weeklyComparison: weeklyComparison?.length || 0,
+    predictionTimeline: predictionTimeline?.length || 0,
+    heartRateStats: heartRateStats?.length || 0,
+    errors: { errorTracking, errorStats, errorWeekly, errorPredictions, errorHR }
+  });
   
   const [personalRecords, setPersonalRecords] = useState(null);
   const [achievements, setAchievements] = useState({ earned: [], nextMilestones: [] });
@@ -86,10 +98,24 @@ export default function MiProgreso() {
       {/* Current Stats Overview */}
       {isLoadingCoreData ? (
         <CurrentStatsSkeleton />
+      ) : !desiresTracking || desiresTracking.length === 0 ? (
+        <div className="mi-progreso-empty">
+          <h2>📊 Comienza tu Viaje</h2>
+          <p>No hay suficientes datos para mostrar tu progreso aún.</p>
+          <p>Cuando registres tus primeros antojos y los resistas, aquí verás:</p>
+          <ul style={{ textAlign: 'left', display: 'inline-block', marginTop: '1rem' }}>
+            <li>🔥 Tu racha actual de resistencia</li>
+            <li>📈 Comparación semanal de antojos</li>
+            <li>🏆 Récords personales y logros desbloqueados</li>
+            <li>💪 Días sin antojos y estadísticas</li>
+          </ul>
+          <p style={{ marginTop: '1.5rem', fontSize: '0.9rem', opacity: 0.7 }}>
+            Revisa la consola del navegador (F12) para ver detalles técnicos
+          </p>
+        </div>
       ) : !personalRecords ? (
         <div className="mi-progreso-empty">
-          <p>No hay suficientes datos para mostrar tu progreso aún.</p>
-          <p>Sigue usando la app y vuelve pronto!</p>
+          <p>Calculando tus estadísticas personales...</p>
         </div>
       ) : (
         <section className="current-stats">
@@ -117,7 +143,12 @@ export default function MiProgreso() {
               <div className="stat-icon">✅</div>
               <div className="stat-content">
                 <div className="stat-value">
-                  {desiresStats?.[0]?.porcentaje_resolucion?.toFixed(0) || 0}%
+                  {(() => {
+                    const value = desiresStats?.[0]?.porcentaje_resolucion;
+                    if (!value) return '0%';
+                    const num = parseFloat(value);
+                    return isNaN(num) ? '0%' : `${num.toFixed(0)}%`;
+                  })()}
                 </div>
                 <div className="stat-label">Tasa de Resistencia</div>
                 <div className="stat-sublabel">total histórico</div>
@@ -128,9 +159,12 @@ export default function MiProgreso() {
               <div className="stat-icon">⚡</div>
               <div className="stat-content">
                 <div className="stat-value">
-                  {desiresStats?.[0]?.promedio_horas_resolucion 
-                    ? `${Math.round(desiresStats[0].promedio_horas_resolucion * 60)} min`
-                    : 'N/A'}
+                  {(() => {
+                    const value = desiresStats?.[0]?.promedio_horas_resolucion;
+                    if (!value) return 'N/A';
+                    const num = parseFloat(value);
+                    return isNaN(num) ? 'N/A' : `${Math.round(num * 60)} min`;
+                  })()}
                 </div>
                 <div className="stat-label">Tiempo Promedio</div>
                 <div className="stat-sublabel">para resistir</div>
