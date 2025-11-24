@@ -1,21 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CrudForm from '../../../components/admin/CrudForm';
 import { adminResourcesService } from '../../../services/AdminResourcesService';
-
-const fields = [
-  { name: 'titulo', label: 'Título', type: 'text' },
-  { name: 'descripcion', label: 'Descripción', type: 'textarea' },
-  { name: 'resuelto', label: 'Resuelto', type: 'checkbox', default: false },
-];
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function DeseoForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [initialValues, setInitialValues] = useState({ titulo: '', descripcion: '' });
+
+  useEffect(() => {
+    if (id) {
+      adminResourcesService.getDeseo(id).then((res) => setInitialValues(res || {}));
+    }
+  }, [id]);
+
+  const handleSubmit = async (values) => {
+    if (id) {
+      await adminResourcesService.updateDeseo(id, values);
+    } else {
+      await adminResourcesService.createDeseo(values);
+    }
+    navigate('/admin/deseos');
+  };
+
   return (
     <CrudForm
-      resourceName="Deseo"
-      fields={fields}
-      loadItem={(id) => adminResourcesService.getDeseo(id)}
-      createItem={(body) => adminResourcesService.createDeseo(body)}
-      updateItem={(id, body) => adminResourcesService.updateDeseo(id, body)}
+      title={id ? 'Editar Deseo' : 'Crear Deseo'}
+      initialValues={initialValues}
+      fields={[
+        { name: 'titulo', label: 'Título', type: 'text' },
+        { name: 'descripcion', label: 'Descripción', type: 'text' },
+      ]}
+      onSubmit={handleSubmit}
     />
   );
 }
