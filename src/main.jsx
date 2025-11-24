@@ -5,8 +5,6 @@ import { lazy } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from './pages/home/Home'
 import Login_Register from './pages/login-register/Login_Register'
-<<<<<<< Updated upstream
-=======
 import ProtectedRoute from './components/Auth/ProtectedRoute'
 import PhysicalDataForm from './components/Onboarding/PhysicalDataForm'
 import Habits from './pages/onboarding/Habits'
@@ -28,14 +26,13 @@ import UsuariosList from './pages/admin/usuarios/UsuariosList'
 import UsuarioForm from './pages/admin/usuarios/UsuarioForm'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
->>>>>>> Stashed changes
 
 const App = lazy(() => import('./App'));
 
+const queryClient = new QueryClient()
+
 const router = createBrowserRouter([
   {
-<<<<<<< Updated upstream
-=======
     path: '/login',
     element: <Login_Register />
   },
@@ -131,7 +128,6 @@ const router = createBrowserRouter([
 
   /* Rutas públicas con NavBar y Footer */
   {
->>>>>>> Stashed changes
     element: <App />,
     children: [
       {
@@ -150,9 +146,10 @@ const router = createBrowserRouter([
   }
 ])
 
-
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </StrictMode>,
 )
