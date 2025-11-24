@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+@layer base {
+    :root {
+        /* App Color Palette */
+        --vibrant-teal: #00C4B4;
+        --forest-green: #2E7BD2;
+        --sky-blue: #81D4FA;
+        --lime-green: #A7FFEB;
+        --soft-gray: #ECEFF1;
+        --dark-slate: #263238;
+        
+        /* Semantic colors */
+        --primary: var(--vibrant-teal);
+        --secondary: var(--forest-green);
+        --accent: var(--sky-blue);
+        --success: var(--lime-green);
+        --neutral: var(--soft-gray);
+        --text-dark: var(--dark-slate);
+    }
+}
+
 * {
     margin: 0;
     padding: 0;

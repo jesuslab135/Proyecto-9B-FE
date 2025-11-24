@@ -13,7 +13,7 @@ export default function FormulariosList() {
       renderItem={(item) => (
         <div>
           <div className="font-semibold">{item.titulo || `Formulario #${item.id}`}</div>
-          <div className="text-sm text-gray-600">{item.contenido ? item.contenido.substring(0, 120) : ''}</div>
+          <div className="text-sm text-gray-600">{item.contenido ? item.contenido.substring(0,120) : ''}</div>
         </div>
       )}
     />

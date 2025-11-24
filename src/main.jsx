@@ -12,20 +12,12 @@ import Results from './pages/onboarding/Results'
 import DashboardLayout from './components/layouts/DashboardLayout'
 import DashboardContent from './pages/dashboard/DashboardContent'
 import AdminDashboardContent from './pages/admin/AdminDashboardContent'
-import EmocionesList from './pages/admin/emociones/EmocionesList'
-import EmocionForm from './pages/admin/emociones/EmocionForm'
-import HabitosList from './pages/admin/habitos/HabitosList'
-import HabitoForm from './pages/admin/habitos/HabitoForm'
-import MotivosList from './pages/admin/motivos/MotivosList'
-import MotivoForm from './pages/admin/motivos/MotivoForm'
-import FormulariosList from './pages/admin/formularios/FormulariosList'
-import FormularioForm from './pages/admin/formularios/FormularioForm'
-import DeseosList from './pages/admin/deseos/DeseosList'
-import DeseoForm from './pages/admin/deseos/DeseoForm'
-import UsuariosList from './pages/admin/usuarios/UsuariosList'
-import UsuarioForm from './pages/admin/usuarios/UsuarioForm'
+import MiProgresoPage from './pages/progress/MiProgreso';
+import ConfiguracionPage from './pages/settings/Configuracion';
+
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import CRUD_usuarios from './pages/admin/usuarios/CRUD_usuarios'
 
 const App = lazy(() => import('./App'));
 
@@ -76,6 +68,14 @@ const router = createBrowserRouter([
         path: '/dashboard',
         element: <DashboardContent />
       },
+      {
+        path: '/progress',
+        element: <MiProgresoPage />
+      },
+      {
+        path: '/configuration',  
+        element: <ConfiguracionPage />
+      }
       // Agrega más rutas aquí que necesiten el mismo layout
       // {
       //   path: '/profile',
@@ -88,8 +88,8 @@ const router = createBrowserRouter([
     ]
   },
 
+  /* Dashboard para Admin (si lo necesitas separado) */
   {
-    path: '/admin',
     element: (
       <ProtectedRoute requiredRole="administrador">
         <DashboardLayout />
@@ -97,32 +97,13 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: 'dashboard',
-        element: <AdminDashboardContent />
+        path: '/admin/dashboard',
+        element: <AdminDashboardContent />,
       },
-      { path: 'emociones', element: <EmocionesList /> },
-      { path: 'emociones/create', element: <EmocionForm /> },
-      { path: 'emociones/edit/:id', element: <EmocionForm /> },
-
-      { path: 'habitos', element: <HabitosList /> },
-      { path: 'habitos/create', element: <HabitoForm /> },
-      { path: 'habitos/edit/:id', element: <HabitoForm /> },
-
-      { path: 'motivos', element: <MotivosList /> },
-      { path: 'motivos/create', element: <MotivoForm /> },
-      { path: 'motivos/edit/:id', element: <MotivoForm /> },
-
-      { path: 'formularios', element: <FormulariosList /> },
-      { path: 'formularios/create', element: <FormularioForm /> },
-      { path: 'formularios/edit/:id', element: <FormularioForm /> },
-
-      { path: 'deseos', element: <DeseosList /> },
-      { path: 'deseos/create', element: <DeseoForm /> },
-      { path: 'deseos/edit/:id', element: <DeseoForm /> },
-      
-      { path: 'usuarios', element: <UsuariosList /> },
-      { path: 'usuarios/nuevo', element: <UsuarioForm /> },
-      { path: 'usuarios/editar/:id', element: <UsuarioForm /> },
+      {
+        path: '/admin/usuarios',
+        element: <CRUD_usuarios />
+      }
     ]
   },
 
@@ -135,15 +116,11 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
-        path: '/login',
-        element: <Login_Register />
-      },
-      {
         path: '/hola',
         element: <h1>Hola Mundo</h1>
       }
     ]
-  }
+  },
 ])
 
 createRoot(document.getElementById('root')).render(

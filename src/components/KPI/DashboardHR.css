@@ -1,0 +1,215 @@
+/* DashboardHR.css - Frecuencia Cardíaca */
+
+.dashboard-hr-container {
+  width: 100%;
+}
+
+/* Header Section */
+.hr-stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #00C4B4 0%, #2E7BD2 100%);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 196, 180, 0.2);
+}
+
+.hr-stats-header h4 {
+  margin: 0;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.hr-stats-values {
+  display: flex;
+  gap: 24px;
+}
+
+.hr-stat-item {
+  text-align: center;
+}
+
+.hr-stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.hr-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Today Section */
+.hr-today-section {
+  background: linear-gradient(135deg, #81D4FA 0%, #A7FFEB 100%);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(129, 212, 250, 0.3);
+}
+
+.hr-today-section h5 {
+  margin: 0 0 8px 0;
+  color: #263238;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hr-today-value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.hr-today-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2E7BD2;
+}
+
+.hr-today-label {
+  font-size: 14px;
+  color: #263238;
+  opacity: 0.7;
+}
+
+/* Table Section */
+.hr-table-wrapper {
+  background: #fff;
+  border: 1px solid #ECEFF1;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.hr-table-scroll {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Custom Scrollbar */
+.hr-table-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.hr-table-scroll::-webkit-scrollbar-track {
+  background: #ECEFF1;
+}
+
+.hr-table-scroll::-webkit-scrollbar-thumb {
+  background: #00C4B4;
+  border-radius: 4px;
+}
+
+.hr-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #2E7BD2;
+}
+
+.hr-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.hr-table thead {
+  background: linear-gradient(135deg, #263238 0%, #37474F 100%);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.hr-table thead th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #00C4B4;
+}
+
+.hr-table tbody tr {
+  border-bottom: 1px solid #ECEFF1;
+  transition: background-color 0.2s ease;
+}
+
+.hr-table tbody tr:hover {
+  background-color: #F5F7FA;
+}
+
+.hr-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.hr-table tbody td {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #263238;
+}
+
+.hr-table tbody td:first-child {
+  font-weight: 500;
+  color: #2E7BD2;
+}
+
+/* Loading State */
+.hr-loading {
+  text-align: center;
+  padding: 40px;
+  color: #00C4B4;
+  font-size: 16px;
+}
+
+/* Error State */
+.hr-error {
+  text-align: center;
+  padding: 40px;
+  color: #f44336;
+  font-size: 14px;
+  background: #ffebee;
+  border-radius: 12px;
+}
+
+/* Empty State */
+.hr-empty {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hr-stats-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .hr-stats-values {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .hr-stat-value {
+    font-size: 18px;
+  }
+
+  .hr-table thead th,
+  .hr-table tbody td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .hr-today-number {
+    font-size: 24px;
+  }
+}

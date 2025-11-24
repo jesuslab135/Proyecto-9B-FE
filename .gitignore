@@ -1,6 +1,9 @@
 # Node modules
 node_modules/
 
+# Dependencies installed by package managers
+package-lock.json
+
 # Build output
 dist/
 build/
@@ -28,5 +31,10 @@ pnpm-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
+
+# Test screenshots
+screenshots/
+*.png
+error-*.png
 
 # Optional: coverage reports
