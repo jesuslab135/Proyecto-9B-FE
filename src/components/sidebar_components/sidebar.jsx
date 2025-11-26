@@ -83,6 +83,8 @@ export default function Sidebar() {
             path: "/configuration",
           },
         ];
+
+      // Si el usuario es administrador 
       case "administrador":
         return [
           {
@@ -103,7 +105,7 @@ export default function Sidebar() {
                 />
               </svg>
             ),
-            path: "/dashboard",
+            path: "/admin/dashboard",
           },
           {
             name: "Usuarios",
@@ -123,7 +125,7 @@ export default function Sidebar() {
                 />
               </svg>
             ),
-            path: "/usuarios",
+            path: "/admin/usuarios",
           },
           {
             name: "Reportes",
@@ -143,7 +145,7 @@ export default function Sidebar() {
                 />
               </svg>
             ),
-            path: "/reportes",
+            path: "/admin/reportes",
           },
           {
             name: "Configuración",
@@ -169,7 +171,7 @@ export default function Sidebar() {
                 />
               </svg>
             ),
-            path: "/configuracion",
+            path: "/admin/configuracion",
           },
         ];
       default:
