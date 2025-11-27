@@ -17,10 +17,6 @@ export default function Configuracion() {
   // State for notification preferences (stored in localStorage for now)
   const [notificationPrefs, setNotificationPrefs] = useState({
     enableNotifications: true,
-    heartRateThreshold: 120,
-    dailyCigaretteLimit: 10,
-    reminderFrequency: 'daily', // 'off', 'daily', 'twice_daily'
-    streakReminder: true,
   });
   
   // State for password change
@@ -48,6 +44,13 @@ export default function Configuracion() {
   const saveNotificationPrefs = (prefs) => {
     localStorage.setItem('notificationPrefs', JSON.stringify(prefs));
     setNotificationPrefs(prefs);
+    
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('notificationPrefsChanged', { 
+      detail: prefs 
+    }));
+    
+    logger.info('Notification preferences updated:', prefs);
   };
   
   // Handle profile update
