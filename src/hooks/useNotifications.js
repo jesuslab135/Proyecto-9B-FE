@@ -171,11 +171,14 @@ export function useNotifications() {
     
     switch (data.type) {
       case 'initial_notifications': {
-        // Notificaciones al conectar
-        setNotifications(data.notifications || []);
-        const initialUnread = (data.notifications || []).filter(n => !n.leida).length;
-        setUnreadCount(initialUnread);
-        logger.info(`📬 Initial notifications loaded: ${data.notifications?.length} total, ${initialUnread} unread`);
+        // Notificaciones al conectar - solo mostrar las no leídas
+        const allNotifications = data.notifications || [];
+        const unreadNotifications = allNotifications.filter(n => !n.leida);
+        
+        setNotifications(unreadNotifications);
+        setUnreadCount(unreadNotifications.length);
+        
+        logger.info(`📬 Initial notifications loaded: ${allNotifications.length} total, ${unreadNotifications.length} unread (showing only unread)`);
         break;
       }
         

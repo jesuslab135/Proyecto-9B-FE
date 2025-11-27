@@ -1,5 +1,6 @@
-import { useDesiresStats, useDesiresTracking } from "../../hooks/useDashboard";
+import { useState, useEffect } from "react";
 import { authService } from "../../services/AuthService";
+import { useDesiresStats, useDesiresTracking } from "../../hooks/useDashboard";
 import "./DesiresPanel.css";
 
 export default function DesiresPanel() {
@@ -7,16 +8,33 @@ export default function DesiresPanel() {
   const user = authService.getCurrentUser();
   const consumidorId = user?.consumidor_id || 1;
   
-  const { data: stats, isLoading } = useDesiresStats(consumidorId);
-  const { data: track } = useDesiresTracking(consumidorId);
+  const [desiresData, setDesiresData] = useState(null);
+  
+  // ✅ USAR API REST - WebSocket no es necesario para desires (eventos poco frecuentes)
+  // Según guía: "DesiresPanel - Mantener API REST (Recomendado)"
+  const { data: statsData } = useDesiresStats(consumidorId);
+  const { data: trackingData } = useDesiresTracking(consumidorId);
+  
+  // Actualizar desiresData cuando lleguen datos de la API REST
+  useEffect(() => {
+    if (statsData && trackingData) {
+      setDesiresData({
+        stats: statsData,
+        tracking: trackingData
+      });
+    }
+  }, [statsData, trackingData]);
 
-  if (isLoading) {
+  if (!desiresData) {
     return (
       <div className="desires-loading">
         <p>⏳ Cargando datos de deseos...</p>
       </div>
     );
   }
+
+  const stats = desiresData.stats || [];
+  const track = desiresData.tracking || [];
 
   return (
     <div className="desires-panel-container">
