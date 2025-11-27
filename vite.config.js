@@ -1,35 +1,39 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  
+
   server: {
-    host: '0.0.0.0',
+    host: "0.0.0.0",
     port: 5173,
     strictPort: true,
     watch: {
       usePolling: true,
-      interval: 1000
-    }
+      interval: 1000,
+    },
   },
-  
+
+  optimizeDeps: {
+    exclude: ["chromedriver"],
+  },
+
   build: {
-    outDir: 'dist',
+    outDir: "dist",
     sourcemap: false,
-    minify: 'esbuild',
+    minify: "esbuild",
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          axios: ['axios']
-        }
-      }
-    }
+          vendor: ["react", "react-dom", "react-router-dom"],
+          axios: ["axios"],
+        },
+      },
+    },
   },
-  
+
   preview: {
-    host: '0.0.0.0',
-    port: 5173
-  }
-})
+    host: "0.0.0.0",
+    port: 5173,
+  },
+});
