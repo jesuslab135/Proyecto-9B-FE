@@ -1,3 +1,4 @@
+/* CACHE_BUST_v3_20251121 */
 import { useEffect, useState } from 'react';
 import { 
   useDesiresTracking, 
@@ -11,60 +12,80 @@ import { checkAchievements } from '../../utils/progress/achievements';
 import { authService } from '../../services/AuthService';
 import './MiProgreso.css';
 
+// Import skeleton components
+import {
+  CurrentStatsSkeleton,
+  WeeklyComparisonSkeleton,
+  PersonalRecordsSkeleton,
+  AchievementsSkeleton,
+  MilestonesSkeleton
+} from './LoadingSkeletons';
+
 export default function MiProgreso() {
   const user = authService.getCurrentUser();
   const consumidorId = user?.consumidor_id || 1;
   
-  // Fetch all necessary data
-  const { data: desiresTracking, isLoading: loadingTracking } = useDesiresTracking(consumidorId);
-  const { data: desiresStats, isLoading: loadingStats } = useDesiresStats(consumidorId);
-  const { data: weeklyComparison, isLoading: loadingWeekly } = useWeeklyComparison(consumidorId);
-  const { data: predictionTimeline, isLoading: loadingPredictions } = usePredictionTimeline(consumidorId);
-  const { data: heartRateStats, isLoading: loadingHR } = useHeartRateStats(consumidorId);
+  // Fetch all necessary data with individual loading states
+  const { data: desiresTracking, isLoading: loadingTracking, error: errorTracking } = useDesiresTracking(consumidorId);
+  const { data: desiresStats, isLoading: loadingStats, error: errorStats } = useDesiresStats(consumidorId);
+  const { data: weeklyComparison, isLoading: loadingWeekly, error: errorWeekly } = useWeeklyComparison(consumidorId);
+  const { data: predictionTimeline, isLoading: loadingPredictions, error: errorPredictions } = usePredictionTimeline(consumidorId);
+  const { data: heartRateStats, isLoading: loadingHR, error: errorHR } = useHeartRateStats(consumidorId);
+  
+  // Debug: Log data status [CACHE_BREAK_v2]
+  console.log('🔍 MiProgreso Data Status:', {
+    desiresTracking: desiresTracking?.length || 0,
+    desiresStats: desiresStats?.length || 0,
+    desiresStatsRaw: desiresStats?.[0], // Log raw data to inspect structure
+    weeklyComparison: weeklyComparison?.length || 0,
+    predictionTimeline: predictionTimeline?.length || 0,
+    heartRateStats: heartRateStats?.length || 0,
+    errors: { errorTracking, errorStats, errorWeekly, errorPredictions, errorHR }
+  });
   
   const [personalRecords, setPersonalRecords] = useState(null);
   const [achievements, setAchievements] = useState({ earned: [], nextMilestones: [] });
+  const [loadingRecords, setLoadingRecords] = useState(true);
+  const [loadingAchievements, setLoadingAchievements] = useState(true);
   
-  const isLoading = loadingTracking || loadingStats || loadingWeekly || loadingPredictions || loadingHR;
+  // Determine if core data is still loading
+  const isLoadingCoreData = loadingTracking || loadingStats || loadingPredictions || loadingHR;
   
+  // Calculate personal records when data is ready
   useEffect(() => {
     if (desiresTracking && predictionTimeline && heartRateStats) {
-      // Calculate personal records
-      const records = calculatePersonalRecords(
-        desiresTracking, 
-        predictionTimeline, 
-        heartRateStats[0] || {}
-      );
-      setPersonalRecords(records);
+      setLoadingRecords(true);
       
-      // Check achievements
-      const achievementData = checkAchievements(
-        records, 
-        desiresStats?.[0] || {}, 
-        weeklyComparison?.[0] || {}, 
-        desiresTracking
-      );
-      setAchievements(achievementData);
+      // Simulate slight delay for better UX (optional)
+      setTimeout(() => {
+        const records = calculatePersonalRecords(
+          desiresTracking, 
+          predictionTimeline, 
+          heartRateStats[0] || {}
+        );
+        setPersonalRecords(records);
+        setLoadingRecords(false);
+      }, 300);
     }
-  }, [desiresTracking, predictionTimeline, heartRateStats, desiresStats, weeklyComparison]);
+  }, [desiresTracking, predictionTimeline, heartRateStats]);
   
-  if (isLoading) {
-    return (
-      <div className="mi-progreso-loading">
-        <div className="loading-spinner"></div>
-        <p>Cargando tu progreso...</p>
-      </div>
-    );
-  }
-  
-  if (!personalRecords) {
-    return (
-      <div className="mi-progreso-empty">
-        <p>No hay suficientes datos para mostrar tu progreso aún.</p>
-        <p>Sigue usando la app y vuelve pronto!</p>
-      </div>
-    );
-  }
+  // Check achievements when records and stats are ready
+  useEffect(() => {
+    if (personalRecords && desiresStats && weeklyComparison && desiresTracking) {
+      setLoadingAchievements(true);
+      
+      setTimeout(() => {
+        const achievementData = checkAchievements(
+          personalRecords, 
+          desiresStats[0] || {}, 
+          weeklyComparison[0] || {}, 
+          desiresTracking
+        );
+        setAchievements(achievementData);
+        setLoadingAchievements(false);
+      }, 300);
+    }
+  }, [personalRecords, desiresStats, weeklyComparison, desiresTracking]);
   
   return (
     <div className="mi-progreso-container">
@@ -75,55 +96,88 @@ export default function MiProgreso() {
       </div>
       
       {/* Current Stats Overview */}
-      <section className="current-stats">
-        <h2>📊 Estado Actual</h2>
-        <div className="stats-grid">
-          <div className="stat-card highlight">
-            <div className="stat-icon">🔥</div>
-            <div className="stat-content">
-              <div className="stat-value">{personalRecords.resistance.currentStreak}</div>
-              <div className="stat-label">Racha Actual</div>
-              <div className="stat-sublabel">resistencias consecutivas</div>
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon">🧘</div>
-            <div className="stat-content">
-              <div className="stat-value">{personalRecords.cravingFree.currentDays}</div>
-              <div className="stat-label">Días Sin Antojos</div>
-              <div className="stat-sublabel">período actual</div>
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon">✅</div>
-            <div className="stat-content">
-              <div className="stat-value">
-                {desiresStats?.[0]?.porcentaje_resolucion?.toFixed(0) || 0}%
-              </div>
-              <div className="stat-label">Tasa de Resistencia</div>
-              <div className="stat-sublabel">total histórico</div>
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon">⚡</div>
-            <div className="stat-content">
-              <div className="stat-value">
-                {desiresStats?.[0]?.promedio_horas_resolucion 
-                  ? `${Math.round(desiresStats[0].promedio_horas_resolucion * 60)} min`
-                  : 'N/A'}
-              </div>
-              <div className="stat-label">Tiempo Promedio</div>
-              <div className="stat-sublabel">para resistir</div>
-            </div>
-          </div>
+      {isLoadingCoreData ? (
+        <CurrentStatsSkeleton />
+      ) : !desiresTracking || desiresTracking.length === 0 ? (
+        <div className="mi-progreso-empty">
+          <h2>📊 Comienza tu Viaje</h2>
+          <p>No hay suficientes datos para mostrar tu progreso aún.</p>
+          <p>Cuando registres tus primeros antojos y los resistas, aquí verás:</p>
+          <ul style={{ textAlign: 'left', display: 'inline-block', marginTop: '1rem' }}>
+            <li>🔥 Tu racha actual de resistencia</li>
+            <li>📈 Comparación semanal de antojos</li>
+            <li>🏆 Récords personales y logros desbloqueados</li>
+            <li>💪 Días sin antojos y estadísticas</li>
+          </ul>
+          <p style={{ marginTop: '1.5rem', fontSize: '0.9rem', opacity: 0.7 }}>
+            Revisa la consola del navegador (F12) para ver detalles técnicos
+          </p>
         </div>
-      </section>
+      ) : !personalRecords ? (
+        <div className="mi-progreso-empty">
+          <p>Calculando tus estadísticas personales...</p>
+        </div>
+      ) : (
+        <section className="current-stats">
+          <h2>📊 Estado Actual</h2>
+          <div className="stats-grid">
+            <div className="stat-card highlight">
+              <div className="stat-icon">🔥</div>
+              <div className="stat-content">
+                <div className="stat-value">{personalRecords.resistance.currentStreak}</div>
+                <div className="stat-label">Racha Actual</div>
+                <div className="stat-sublabel">resistencias consecutivas</div>
+              </div>
+            </div>
+            
+            <div className="stat-card">
+              <div className="stat-icon">🧘</div>
+              <div className="stat-content">
+                <div className="stat-value">{personalRecords.cravingFree.currentDays}</div>
+                <div className="stat-label">Días Sin Antojos</div>
+                <div className="stat-sublabel">período actual</div>
+              </div>
+            </div>
+            
+            <div className="stat-card">
+              <div className="stat-icon">✅</div>
+              <div className="stat-content">
+                <div className="stat-value">
+                  {(() => {
+                    const value = desiresStats?.[0]?.porcentaje_resolucion;
+                    if (!value) return '0%';
+                    const num = parseFloat(value);
+                    return isNaN(num) ? '0%' : `${num.toFixed(0)}%`;
+                  })()}
+                </div>
+                <div className="stat-label">Tasa de Resistencia</div>
+                <div className="stat-sublabel">total histórico</div>
+              </div>
+            </div>
+            
+            <div className="stat-card">
+              <div className="stat-icon">⚡</div>
+              <div className="stat-content">
+                <div className="stat-value">
+                  {(() => {
+                    const value = desiresStats?.[0]?.promedio_horas_resolucion;
+                    if (!value) return 'N/A';
+                    const num = parseFloat(value);
+                    return isNaN(num) ? 'N/A' : `${Math.round(num * 60)} min`;
+                  })()}
+                </div>
+                <div className="stat-label">Tiempo Promedio</div>
+                <div className="stat-sublabel">para resistir</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
       
       {/* Weekly Comparison */}
-      {weeklyComparison && weeklyComparison[0] && (
+      {loadingWeekly ? (
+        <WeeklyComparisonSkeleton />
+      ) : weeklyComparison && weeklyComparison[0] ? (
         <section className="weekly-comparison">
           <h2>📈 Comparación Semanal</h2>
           <div className="comparison-content">
@@ -175,138 +229,150 @@ export default function MiProgreso() {
             )}
           </div>
         </section>
-      )}
+      ) : null}
       
       {/* Personal Records Section */}
-      <section className="personal-records">
-        <h2>🏅 Tus Récords Personales</h2>
-        
-        <div className="records-grid">
-          <div className="record-card">
-            <div className="record-icon">🔥</div>
-            <div className="record-value">{personalRecords.resistance.longestStreak}</div>
-            <div className="record-label">Racha Más Larga</div>
-            <div className="record-description">resistencias consecutivas</div>
-          </div>
+      {loadingRecords || isLoadingCoreData ? (
+        <PersonalRecordsSkeleton />
+      ) : personalRecords ? (
+        <section className="personal-records">
+          <h2>🏅 Tus Récords Personales</h2>
           
-          <div className="record-card">
-            <div className="record-icon">⚡</div>
-            <div className="record-value">
-              {personalRecords.resistance.fastestResolutionMinutes > 0 
-                ? `${personalRecords.resistance.fastestResolutionMinutes} min`
-                : 'N/A'}
+          <div className="records-grid">
+            <div className="record-card">
+              <div className="record-icon">🔥</div>
+              <div className="record-value">{personalRecords.resistance.longestStreak}</div>
+              <div className="record-label">Racha Más Larga</div>
+              <div className="record-description">resistencias consecutivas</div>
             </div>
-            <div className="record-label">Resistencia Más Rápida</div>
-            <div className="record-description">tiempo récord</div>
+            
+            <div className="record-card">
+              <div className="record-icon">⚡</div>
+              <div className="record-value">
+                {personalRecords.resistance.fastestResolutionMinutes > 0 
+                  ? `${personalRecords.resistance.fastestResolutionMinutes} min`
+                  : 'N/A'}
+              </div>
+              <div className="record-label">Resistencia Más Rápida</div>
+              <div className="record-description">tiempo récord</div>
+            </div>
+            
+            <div className="record-card">
+              <div className="record-icon">🧘</div>
+              <div className="record-value">{personalRecords.cravingFree.longestPeriodDays} días</div>
+              <div className="record-label">Periodo Sin Antojos</div>
+              <div className="record-description">mayor racha</div>
+            </div>
+            
+            <div className="record-card">
+              <div className="record-icon">💪</div>
+              <div className="record-value">{personalRecords.resistance.mostInWeek}</div>
+              <div className="record-label">Mejor Semana</div>
+              <div className="record-description">resistencias en 7 días</div>
+            </div>
+            
+            <div className="record-card">
+              <div className="record-icon">🎯</div>
+              <div className="record-value">{personalRecords.resistance.mostInDay}</div>
+              <div className="record-label">Mejor Día</div>
+              <div className="record-description">resistencias en un día</div>
+            </div>
+            
+            <div className="record-card">
+              <div className="record-icon">📅</div>
+              <div className="record-value">{personalRecords.cravingFree.totalDays}</div>
+              <div className="record-label">Días Sin Antojos</div>
+              <div className="record-description">total acumulado</div>
+            </div>
           </div>
           
-          <div className="record-card">
-            <div className="record-icon">🧘</div>
-            <div className="record-value">{personalRecords.cravingFree.longestPeriodDays} días</div>
-            <div className="record-label">Periodo Sin Antojos</div>
-            <div className="record-description">mayor racha</div>
-          </div>
+          {personalRecords.health.calmestDay && (
+            <div className="calmest-day-card">
+              <h3>🌟 Tu Día Más Tranquilo</h3>
+              <p>
+                <strong>{new Date(personalRecords.health.calmestDay.date).toLocaleDateString('es-ES')}</strong>
+                {' - '}Sin antojos detectados
+                {personalRecords.health.calmestDay.hrMean > 0 && 
+                  ` con frecuencia cardíaca de ${Math.round(personalRecords.health.calmestDay.hrMean)} bpm`
+                }
+              </p>
+            </div>
+          )}
           
-          <div className="record-card">
-            <div className="record-icon">💪</div>
-            <div className="record-value">{personalRecords.resistance.mostInWeek}</div>
-            <div className="record-label">Mejor Semana</div>
-            <div className="record-description">resistencias en 7 días</div>
-          </div>
-          
-          <div className="record-card">
-            <div className="record-icon">🎯</div>
-            <div className="record-value">{personalRecords.resistance.mostInDay}</div>
-            <div className="record-label">Mejor Día</div>
-            <div className="record-description">resistencias en un día</div>
-          </div>
-          
-          <div className="record-card">
-            <div className="record-icon">📅</div>
-            <div className="record-value">{personalRecords.cravingFree.totalDays}</div>
-            <div className="record-label">Días Sin Antojos</div>
-            <div className="record-description">total acumulado</div>
-          </div>
-        </div>
-        
-        {personalRecords.health.calmestDay && (
-          <div className="calmest-day-card">
-            <h3>🌟 Tu Día Más Tranquilo</h3>
-            <p>
-              <strong>{new Date(personalRecords.health.calmestDay.date).toLocaleDateString('es-ES')}</strong>
-              {' - '}Sin antojos detectados
-              {personalRecords.health.calmestDay.hrMean > 0 && 
-                ` con frecuencia cardíaca de ${Math.round(personalRecords.health.calmestDay.hrMean)} bpm`
-              }
-            </p>
-          </div>
-        )}
-        
-        {personalRecords.health.bestWeek && (
-          <div className="best-week-card">
-            <h3>⭐ Tu Mejor Semana</h3>
-            <p>
-              Semana del <strong>{new Date(personalRecords.health.bestWeek.weekStart).toLocaleDateString('es-ES')}</strong>
-              {' - '}
-              <strong>{personalRecords.health.bestWeek.resistanceRate}% de resistencia</strong>
-              {' '}({personalRecords.health.bestWeek.resistances}/{personalRecords.health.bestWeek.total} antojos resistidos)
-            </p>
-          </div>
-        )}
-      </section>
+          {personalRecords.health.bestWeek && (
+            <div className="best-week-card">
+              <h3>⭐ Tu Mejor Semana</h3>
+              <p>
+                Semana del <strong>{new Date(personalRecords.health.bestWeek.weekStart).toLocaleDateString('es-ES')}</strong>
+                {' - '}
+                <strong>{personalRecords.health.bestWeek.resistanceRate}% de resistencia</strong>
+                {' '}({personalRecords.health.bestWeek.resistances}/{personalRecords.health.bestWeek.total} antojos resistidos)
+              </p>
+            </div>
+          )}
+        </section>
+      ) : null}
       
       {/* Achievements Section */}
-      <section className="achievements">
-        <h2>🏆 Logros Desbloqueados</h2>
-        
-        {achievements.earned.length > 0 ? (
-          <div className="achievements-grid">
-            {achievements.earned.map(achievement => (
-              <div key={achievement.id} className="achievement-badge earned">
-                <div className="badge-icon">{achievement.icon}</div>
-                <div className="badge-name">{achievement.name}</div>
-                <div className="badge-description">{achievement.description}</div>
-                <div className="badge-earned-label">✓ Desbloqueado</div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="no-achievements">
-            <p>Aún no has desbloqueado ningún logro.</p>
-            <p>¡Sigue resistiendo antojos para ganar tus primeras insignias!</p>
-          </div>
-        )}
-        
-        {achievements.nextMilestones.length > 0 && (
-          <>
-            <h3>🎯 Próximos Hitos</h3>
-            <div className="milestones-list">
-              {achievements.nextMilestones.map(milestone => (
-                <div key={milestone.id} className="milestone-card">
-                  <div className="milestone-header">
-                    <span className="milestone-icon">{milestone.icon}</span>
-                    <div className="milestone-info">
-                      <span className="milestone-name">{milestone.name}</span>
-                      <span className="milestone-description">{milestone.description}</span>
-                    </div>
-                  </div>
-                  <div className="milestone-progress">
-                    <div className="progress-bar">
-                      <div 
-                        className="progress-fill" 
-                        style={{ width: `${milestone.progressPercentage}%` }}
-                      />
-                    </div>
-                    <span className="progress-text">
-                      {milestone.progress} / {milestone.required} ({milestone.progressPercentage}%)
-                    </span>
-                  </div>
+      {loadingAchievements ? (
+        <AchievementsSkeleton />
+      ) : (
+        <section className="achievements">
+          <h2>🏆 Logros Desbloqueados</h2>
+          
+          {achievements.earned.length > 0 ? (
+            <div className="achievements-grid">
+              {achievements.earned.map(achievement => (
+                <div key={achievement.id} className="achievement-badge earned">
+                  <div className="badge-icon">{achievement.icon}</div>
+                  <div className="badge-name">{achievement.name}</div>
+                  <div className="badge-description">{achievement.description}</div>
+                  <div className="badge-earned-label">✓ Desbloqueado</div>
                 </div>
               ))}
             </div>
-          </>
-        )}
-      </section>
+          ) : (
+            <div className="no-achievements">
+              <p>Aún no has desbloqueado ningún logro.</p>
+              <p>¡Sigue resistiendo antojos para ganar tus primeras insignias!</p>
+            </div>
+          )}
+          
+          {achievements.nextMilestones.length > 0 && (
+            loadingAchievements ? (
+              <MilestonesSkeleton />
+            ) : (
+              <>
+                <h3>🎯 Próximos Hitos</h3>
+                <div className="milestones-list">
+                  {achievements.nextMilestones.map(milestone => (
+                    <div key={milestone.id} className="milestone-card">
+                      <div className="milestone-header">
+                        <span className="milestone-icon">{milestone.icon}</span>
+                        <div className="milestone-info">
+                          <span className="milestone-name">{milestone.name}</span>
+                          <span className="milestone-description">{milestone.description}</span>
+                        </div>
+                      </div>
+                      <div className="milestone-progress">
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${milestone.progressPercentage}%` }}
+                          />
+                        </div>
+                        <span className="progress-text">
+                          {milestone.progress} / {milestone.required} ({milestone.progressPercentage}%)
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )
+          )}
+        </section>
+      )}
     </div>
   );
 }
