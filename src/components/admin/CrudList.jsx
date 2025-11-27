@@ -10,7 +10,22 @@ export default function CrudList({ resourceName, fetchList, onDelete, createPath
     setLoading(true);
     fetchList()
       .then((res) => {
-        if (mounted) setItems(res || []);
+        if (mounted) {
+          if (Array.isArray(res)) {
+            setItems(res);
+          } else if (res && Array.isArray(res.results)) {
+            setItems(res.results);
+          } else if (res && Array.isArray(res.data)) {
+            setItems(res.data);
+          } else {
+            setItems([]);
+            console.warn('CrudList: fetchList did not return an array or expected object structure', res);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('CrudList: Error fetching list', err);
+        if (mounted) setItems([]);
       })
       .finally(() => mounted && setLoading(false));
     return () => (mounted = false);
