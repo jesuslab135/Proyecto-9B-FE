@@ -27,6 +27,7 @@ export default function HabitoForm() {
     <CrudForm
       title={id ? 'Editar Hábito' : 'Crear Hábito'}
       initialValues={initialValues}
+      iconClass="fas fa-calendar-check"
       fields={[
         { name: 'titulo', label: 'Título', type: 'text' },
         { name: 'frecuencia', label: 'Frecuencia', type: 'text' },

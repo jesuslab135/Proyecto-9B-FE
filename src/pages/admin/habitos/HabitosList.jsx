@@ -3,19 +3,22 @@ import CrudList from '../../../components/admin/CrudList';
 import { adminResourcesService } from '../../../services/AdminResourcesService';
 
 export default function HabitosList() {
+  const columns = [
+    { header: 'ID', accessor: 'id' },
+    { header: 'Título', accessor: 'titulo' },
+    { header: 'Frecuencia', accessor: 'frecuencia' }
+  ];
+
   return (
     <CrudList
-      resourceName="Hábitos"
+      title="Administración de Hábitos"
+      subtitle="Gestiona los hábitos de la plataforma"
+      iconClass="fas fa-calendar-check"
       fetchList={() => adminResourcesService.listHabitos()}
       onDelete={(id) => adminResourcesService.deleteHabito(id)}
       createPath="/admin/habitos/create"
       editPathPrefix="/admin/habitos/edit"
-      renderItem={(item) => (
-        <div>
-          <div className="font-semibold">{item.titulo || `Hábito #${item.id}`}</div>
-          <div className="text-sm text-gray-600">Frecuencia: {item.frecuencia ?? 'N/A'}</div>
-        </div>
-      )}
+      columns={columns}
     />
   );
 }

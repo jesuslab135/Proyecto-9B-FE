@@ -27,7 +27,8 @@ export default function MotivoForm() {
     <CrudForm
       title={id ? 'Editar Motivo' : 'Crear Motivo'}
       initialValues={initialValues}
-      fields={[{ name: 'descripcion', label: 'Descripción', type: 'text' }]}
+      iconClass="fas fa-comment-dots"
+      fields={[{ name: 'descripcion', label: 'Descripción', type: 'textarea' }]}
       onSubmit={handleSubmit}
     />
   );
