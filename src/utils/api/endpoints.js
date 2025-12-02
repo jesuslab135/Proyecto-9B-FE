@@ -1,4 +1,6 @@
 
+import { WS_BASE_URL } from "./https";  // ✅ Importar WS_BASE_URL
+
 export const API = {
   usuarios: "usuarios",
   usLogin: "usuarios/login",
@@ -35,4 +37,13 @@ export const API = {
     activeWindow: "dashboard/active-window",
     sensorData: "dashboard/sensor-data",
   },
+
+  // ✅ NUEVO: WebSocket endpoints
+  websockets: {
+    // Funciones que retornan la URL completa del WebSocket
+    sensorData: (consumidorId) => `${WS_BASE_URL}sensor-data/${consumidorId}/`,
+    heartRate: (consumidorId) => `${WS_BASE_URL}heart-rate/${consumidorId}/`,
+    notifications: (consumidorId) => `${WS_BASE_URL}notificaciones/${consumidorId}/`,
+    desires: (consumidorId) => `${WS_BASE_URL}desires/${consumidorId}/`,  // Opcional
+  }
 };
