@@ -24,6 +24,52 @@
   letter-spacing: 0.5px;
 }
 
+/* Live Indicator */
+.hr-stats-header .live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.hr-stats-header .live-indicator.connected {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.hr-stats-header .live-indicator.disconnected {
+  background: rgba(244, 67, 54, 0.3);
+}
+
+.hr-stats-header .pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.hr-stats-header .pulse-dot.active {
+  background: #fff;
+  animation: pulse-white 2s ease-in-out infinite;
+}
+
+@keyframes pulse-white {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
 .hr-stats-values {
   display: flex;
   gap: 24px;

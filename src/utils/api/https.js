@@ -1,8 +1,15 @@
 import axios from "axios";
 
+// ✅ HTTP Base URL
 const envBase =
   import.meta?.env?.VITE_API_BASE_URL ||
   "http://127.0.0.1:8000/api/";
+
+// ✅ WebSocket Base URL (derivada de HTTP Base URL)
+export const WS_BASE_URL = envBase
+  .replace('http://', 'ws://')
+  .replace('https://', 'wss://')
+  .replace('/api/', '/ws/');  // WS usa /ws/ en lugar de /api/
 
 export const http = axios.create({
   baseURL: envBase,
