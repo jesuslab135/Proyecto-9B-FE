@@ -27,9 +27,10 @@ export default function DeseoForm() {
     <CrudForm
       title={id ? 'Editar Deseo' : 'Crear Deseo'}
       initialValues={initialValues}
+      iconClass="fas fa-star"
       fields={[
         { name: 'titulo', label: 'Título', type: 'text' },
-        { name: 'descripcion', label: 'Descripción', type: 'text' },
+        { name: 'descripcion', label: 'Descripción', type: 'textarea' },
       ]}
       onSubmit={handleSubmit}
     />

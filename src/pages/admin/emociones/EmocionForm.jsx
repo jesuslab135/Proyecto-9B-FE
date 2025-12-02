@@ -27,6 +27,7 @@ export default function EmocionForm() {
     <CrudForm
       title={id ? 'Editar Emoción' : 'Crear Emoción'}
       initialValues={initialValues}
+      iconClass="fas fa-heart"
       fields={[
         { name: 'nombre', label: 'Nombre', type: 'text' },
         { name: 'intensidad', label: 'Intensidad', type: 'number' },

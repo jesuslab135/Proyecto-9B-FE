@@ -1,0 +1,89 @@
+{
+  "about": "This is a Zest script. For more details about Zest visit https://github.com/zaproxy/zest/",
+  "zestVersion": "0.8",
+  "title": "Zest User Normal Navigation",
+  "description": "Navegación de usuario normal para ZAP",
+  "prefix": "",
+  "type": "StandAlone",
+  "parameters": {
+    "token": "{{USER_JWT}}"
+  },
+  "statements": [
+    {
+      "url": "http://localhost:5173/dashboard",
+      "method": "GET",
+      "headers": "Authorization: Bearer {{USER_JWT}}\r\n",
+      "assertions": [
+        {
+          "rootExpression": {
+            "code": 200,
+            "not": false,
+            "elementType": "ZestExpressionStatusCode"
+          },
+          "elementType": "ZestAssertion"
+        }
+      ],
+      "followRedirects": true,
+      "index": 1,
+      "elementType": "ZestRequest"
+    },
+    {
+      "url": "http://localhost:5173/perfil",
+      "method": "GET",
+      "headers": "Authorization: Bearer {{USER_JWT}}\r\n",
+      "assertions": [
+        {
+          "rootExpression": {
+            "code": 200,
+            "not": false,
+            "elementType": "ZestExpressionStatusCode"
+          },
+          "elementType": "ZestAssertion"
+        }
+      ],
+      "followRedirects": true,
+      "index": 2,
+      "elementType": "ZestRequest"
+    },
+    {
+      "url": "http://localhost:5173/historial",
+      "method": "GET",
+      "headers": "Authorization: Bearer {{USER_JWT}}\r\n",
+      "assertions": [
+        {
+          "rootExpression": {
+            "code": 200,
+            "not": false,
+            "elementType": "ZestExpressionStatusCode"
+          },
+          "elementType": "ZestAssertion"
+        }
+      ],
+      "followRedirects": true,
+      "index": 3,
+      "elementType": "ZestRequest"
+    },
+    {
+      "url": "http://localhost:8000/api/formularios/submit",
+      "method": "POST",
+      "data": "{\"field1\":\"value1\"}",
+      "headers": "Authorization: Bearer {{USER_JWT}}\r\nContent-Type: application/json\r\n",
+      "assertions": [
+        {
+          "rootExpression": {
+            "code": 201,
+            "not": false,
+            "elementType": "ZestExpressionStatusCode"
+          },
+          "elementType": "ZestAssertion"
+        }
+      ],
+      "followRedirects": true,
+      "index": 4,
+      "elementType": "ZestRequest"
+    }
+  ],
+  "authentication": [],
+  "index": 0,
+  "elementType": "ZestScript"
+}
