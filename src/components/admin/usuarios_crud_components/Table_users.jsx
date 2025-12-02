@@ -1,5 +1,5 @@
 import "./Table_users.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import Pagination from "../../../components/Global_components/Pagination";
 import { UsuariosAPI } from "../../../utils/api/usuarios.client";
 import { Modal } from "react-responsive-modal";
@@ -12,30 +12,43 @@ const Table_users = () => {
   const itemsPerPage = 5;
   const [page, setPage] = useState(1);
 
-  // const para el Modal
-  const [open, setOpen] = useState(false);
-  const onCloseModal = () => setOpen(false);
-  const onOpenModal = () => setOpen(true);
-
   // Funicon para obtener al lista usuarios
+
+  const fetchUsers = async () => {
+    try {
+      const res = await UsuariosAPI.list();
+      const ordered = (res.results || []).sort((a, b) => a.id - b.id);
+      setUsers(ordered);
+      setLoading(false);
+      console.log("Usuarios obtenidos:", ordered);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setLoading(true);
+    }
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await UsuariosAPI.list();
-        const ordered = (res.results || []).sort((a, b) => a.id - b.id);
-        setUsers(ordered);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        setLoading(true);
-      }
-    };
     fetchUsers();
   }, []);
 
   // Funcion para editar al usuario
 
   // Funcion para eliminar al usuario
+
+  const eliminarUsuario = async (id) => {
+    if (!confirm("¿Seguro que deseas eliminar este usuario?")) return;
+
+    try {
+      await UsuariosAPI.softDelete(id);
+
+      await fetchUsers();
+
+      alert("Usuario eliminado correctamente.");
+    } catch (error) {
+      console.error(error);
+      alert("Error al eliminar el usuario.");
+    }
+  };
 
   // Math.ceil redondea hacia arriba al entero más cercano
   const totalPages = Math.ceil(users.length / itemsPerPage);
@@ -127,11 +140,12 @@ const Table_users = () => {
                         </span>
                       </td>
                       <td className="acciones-usuario">
-                        <button onClick={onOpenModal}>
+                        <button>
                           <i className="fas fa-edit edit-container"></i>
                         </button>
-
-                        <i className="fas fa-trash-alt delete-container"></i>
+                        <button onClick={() => eliminarUsuario(users.id)}>
+                          <i className="fas fa-trash-alt delete-container"></i>
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -147,18 +161,7 @@ const Table_users = () => {
             </div>
           </>
         )}
-        
       </div>
-      <Modal open={open} onClose={onCloseModal} center  container={document.body}>
-        <h2>Simple centered modal</h2>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
-          pulvinar risus non risus hendrerit venenatis. Pellentesque sit amet
-          hendrerit risus, sed porttitor quam.
-        </p>
-      </Modal>
-      
-      
     </>
   );
 };
