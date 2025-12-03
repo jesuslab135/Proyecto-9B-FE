@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import NavBar from './components/ui/NavBar.jsx'
-import Footer from './components/ui/Footer.jsx'
+import NavBar from './components/UI/NavBar.jsx'
+import Footer from './components/UI/Footer.jsx'
 
 function App() {
   return (
