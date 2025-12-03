@@ -17,7 +17,7 @@ const envBase = import.meta?.env?.VITE_API_BASE_URL ||
 export const WS_BASE_URL = envBase
   .replace('http://', 'ws://')
   .replace('https://', 'wss://')
-  .replace('/api/', '/ws/');
+  .replace(/\/api\/?$/, '/ws/');  // Reemplazar /api o /api/ al final
 
 console.log('🌐 API Base URL:', envBase);
 console.log('🔌 WebSocket URL:', WS_BASE_URL);

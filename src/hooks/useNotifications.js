@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { authService } from '../services/AuthService';
 import { logger } from '../services/Logger';
 import { NotificacionesAPI } from '../utils/api/notificaciones.client';
+import { API } from '../utils/api/endpoints';
 
 /**
  * Hook para manejar notificaciones con WebSocket
@@ -98,10 +99,8 @@ export function useNotifications() {
     isConnectingRef.current = true;
     
     try {
-      // Determinar URL del WebSocket
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = import.meta.env.VITE_WS_URL || 'localhost:8000';
-      const wsUrl = `${protocol}//${host}/ws/notificaciones/${consumidorId}/`;
+      // ✅ Usar URL centralizada desde endpoints
+      const wsUrl = API.websockets.notifications(consumidorId);
       
       logger.info('🔌 Connecting WebSocket:', wsUrl);
       
