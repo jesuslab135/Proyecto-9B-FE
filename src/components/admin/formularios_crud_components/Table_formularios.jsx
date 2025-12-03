@@ -52,7 +52,7 @@ const Table_formularios = () => {
   const filteredFormularios = formularios.filter((formulario) => {
     const term = searchTerm.toLowerCase();
     return (
-      formulario.consumidor_id?.toString().includes(term) ||
+      (formulario.consumidor_id && formulario.consumidor_id.toString().includes(term)) ||
       (formulario.emociones && formulario.emociones.toLowerCase().includes(term)) ||
       (formulario.motivos && formulario.motivos.toLowerCase().includes(term))
     );

@@ -66,7 +66,7 @@ const Table_deseos = () => {
   const filteredDeseos = deseos.filter((deseo) => {
     const term = searchTerm.toLowerCase();
     return (
-      deseo.tipo_deseo.toLowerCase().includes(term) ||
+      (deseo.tipo_deseo && deseo.tipo_deseo.toLowerCase().includes(term)) ||
       (deseo.intensidad && deseo.intensidad.toLowerCase().includes(term))
     );
   });
