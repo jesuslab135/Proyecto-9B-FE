@@ -23,6 +23,7 @@ export const WS_BASE_URL = import.meta.env.VITE_WS_URL ||
 
 console.log('🌐 API Base URL:', envBase);
 console.log('🔌 WebSocket URL:', WS_BASE_URL);
+console.log('📡 Using VITE_WS_URL:', import.meta.env.VITE_WS_URL ? 'YES' : 'NO');
 
 // ============================================================
 // AXIOS INSTANCE
