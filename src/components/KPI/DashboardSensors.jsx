@@ -1,43 +1,67 @@
-import { useEffect, useState } from "react";
-import { useSensorData } from "../../hooks/useDashboard";
+import { useState, useEffect } from "react";
 import { authService } from "../../services/AuthService";
+import { useWebSocket } from "../../hooks/useWebSocket";
+import { useSensorData } from "../../hooks/useDashboard";
+import { API } from "../../utils/api/endpoints";  // ✅ Importar API config
 import "./DashboardSensors.css";
 
 export default function DashboardSensors() {
   const user = authService.getCurrentUser();
   const consumidorId = user?.consumidor_id || 1;
   
-  // Fetch sensor data with auto-refresh
-  const { data: sensorData, isLoading, error, refetch } = useSensorData(consumidorId);
+  const [sensorData, setSensorData] = useState([]);
+  const [latestReading, setLatestReading] = useState(null);
   
-  // Auto-refresh every 5 seconds to match ESP32 send interval
+  // ✅ WebSocket habilitado - Usar API REST solo si WebSocket falla
+  const USE_WEBSOCKET = true;
+  
+  // Fallback: API REST (solo si WebSocket deshabilitado)
+  const { data: apiSensorData, refetch } = useSensorData(consumidorId);
+  
+  // ✅ WebSocket connection usando URL centralizada
+  const { isConnected, error: wsError } = useWebSocket(
+    API.websockets.sensorData(consumidorId),
+    {
+      enabled: USE_WEBSOCKET,
+      maxReconnectAttempts: 2,  // Solo 2 intentos
+      reconnectDelay: 5000,      // 5 segundos entre intentos
+      onMessage: (message) => {
+        if (message.type === 'initial_data') {
+          setSensorData(message.lecturas || []);
+          if (message.lecturas && message.lecturas.length > 0) {
+            setLatestReading(message.lecturas[0]);
+          }
+        } else if (message.type === 'sensor_update') {
+          const newReading = message.lectura;
+          setLatestReading(newReading);
+          setSensorData(prev => [newReading, ...prev].slice(0, 10));
+        }
+      }
+    }
+  );
+  
+  // Auto-refresh con API REST cuando WebSocket está deshabilitado O falla
   useEffect(() => {
-    const interval = setInterval(() => {
-      refetch();
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, [refetch]);
+    if (!USE_WEBSOCKET || wsError) {
+      const interval = setInterval(() => {
+        refetch();
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [USE_WEBSOCKET, wsError, refetch]);
+  
+  // Actualizar desde API REST cuando WebSocket deshabilitado O falla
+  useEffect(() => {
+    if ((!USE_WEBSOCKET || wsError) && apiSensorData) {
+      setSensorData(apiSensorData);
+      if (apiSensorData.length > 0) {
+        setLatestReading(apiSensorData[0]);
+      }
+    }
+  }, [apiSensorData, USE_WEBSOCKET, wsError]);
 
-  if (isLoading) {
-    return (
-      <div className="sensor-loading">
-        <div className="loading-spinner"></div>
-        <p>⏳ Cargando datos de sensores...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="sensor-error">
-        <p>❌ Error al cargar datos: {error.message}</p>
-      </div>
-    );
-  }
-
-  // Get the latest reading
-  const latestReading = sensorData && sensorData.length > 0 ? sensorData[0] : null;
+  // No mostrar error si tenemos fallback de API REST funcionando
+  // Solo mostrar cuando definitivamente no hay datos
   
   // Calculate accelerometer magnitude (movement intensity)
   const accelMagnitude = latestReading 
@@ -62,10 +86,12 @@ export default function DashboardSensors() {
       {/* Real-time Indicator */}
       <div className="sensor-header">
         <h4>Datos de Sensores ESP32</h4>
-        <div className="live-indicator">
-          <div className="pulse-dot"></div>
-          <span>EN VIVO</span>
-        </div>
+        {USE_WEBSOCKET && (
+          <div className={`live-indicator ${isConnected ? 'connected' : 'disconnected'}`}>
+            <div className={`pulse-dot ${isConnected ? 'active' : ''}`}></div>
+            <span>{isConnected ? 'EN VIVO' : 'DESCONECTADO'}</span>
+          </div>
+        )}
       </div>
 
       {/* Latest Reading Timestamp */}

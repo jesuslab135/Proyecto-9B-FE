@@ -1,4 +1,5 @@
 import { authService } from "../../services/AuthService";
+import NotificationBell from "../notifications/NotificationBell";
 
 export default function Header() {
     const user = authService.getCurrentUser();
@@ -101,30 +102,42 @@ export default function Header() {
                         </div>
                     </div>
 
-                    {/* User Profile Section */}
+                    {/* Right Section: Notifications + User Profile */}
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '16px'
+                        gap: '24px'
                     }}>
+                        {/* Notification Bell - Solo para consumidores */}
+                        {userRole === 'consumidor' && (
+                            <NotificationBell />
+                        )}
+
+                        {/* User Profile Section */}
                         <div style={{
-                            textAlign: 'right'
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '16px'
                         }}>
-                            <p style={{
-                                color: 'white',
-                                fontWeight: 600,
-                                marginBottom: '2px',
-                                fontSize: '16px'
+                            <div style={{
+                                textAlign: 'right'
                             }}>
-                                {userName}
-                            </p>
-                            <p style={{
-                                color: 'rgba(255, 255, 255, 0.7)',
-                                fontSize: '14px',
-                                textTransform: 'capitalize'
-                            }}>
-                                {userRole}
-                            </p>
+                                <p style={{
+                                    color: 'white',
+                                    fontWeight: 600,
+                                    marginBottom: '2px',
+                                    fontSize: '16px'
+                                }}>
+                                    {userName}
+                                </p>
+                                <p style={{
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    fontSize: '14px',
+                                    textTransform: 'capitalize'
+                                }}>
+                                    {userRole}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>

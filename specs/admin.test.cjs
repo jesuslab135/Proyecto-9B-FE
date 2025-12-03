@@ -27,7 +27,7 @@ describe('Admin CRUD (Emociones / Habitos / Motivos)', function() {
     it('should create, edit and delete Emociones, Habitos and Motivos via admin UI', async function() {
         this.timeout(180000);
 
-        const base = process.env.TEST_BASE_URL || 'http://localhost:5173';
+        const base = process.env.TEST_BASE_URL || 'http://localhost:5173/login';
 
         try {
             // Login as admin (credentials via env or defaults)

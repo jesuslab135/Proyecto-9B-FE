@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+    <context>
+        <name>User Context</name>
+        <desc>Contexto para Usuario Normal</desc>
+        <inscope>true</inscope>
+        <incregexes>http://localhost:5173/.*</incregexes>
+        <incregexes>http://localhost:8000/api/.*</incregexes>
+        <excregexes>http://localhost:5173/assets/.*</excregexes>
+        <excregexes>http://localhost:5173/.*\.png</excregexes>
+        <excregexes>http://localhost:5173/.*\.jpg</excregexes>
+        <excregexes>http://localhost:5173/.*\.css</excregexes>
+        <excregexes>http://localhost:5173/.*\.js</excregexes>
+        <tech>
+            <include>Db.PostgreSQL</include>
+            <include>Language.JavaScript</include>
+            <include>Language.Python</include>
+            <include>OS.Linux</include>
+            <include>WS.Tomcat</include>
+        </tech>
+        <urlparser>
+            <class>org.zaproxy.zap.model.StandardParameterParser</class>
+            <config>{"kvps":"&amp;","kvs":"=","struct":[]}</config>
+        </urlparser>
+        <postparser>
+            <class>org.zaproxy.zap.model.StandardParameterParser</class>
+            <config>{"kvps":"&amp;","kvs":"=","struct":[]}</config>
+        </postparser>
+        <authentication>
+            <type>2</type>
+            <strategy>Estrategia Usuario</strategy>
+            <pollurl/>
+            <pollfreq>60</pollfreq>
+            <pollunits>REQUESTS</pollunits>
+            <loggedin>\Q"success":true\E</loggedin>
+            <loggedout>\Q"detail":"Authentication credentials were not provided."\E</loggedout>
+            <form>
+                <loginurl>http://localhost:8000/api/login/</loginurl>
+                <loginbody>username={%username%}&amp;password={%password%}</loginbody>
+                <loginpageurl>http://localhost:5173/login</loginpageurl>
+            </form>
+        </authentication>
+        <authorization>
+            <type>0</type>
+            <basic>
+                <header/>
+                <body/>
+                <logic>AND</logic>
+                <code>-1</code>
+            </basic>
+        </authorization>
+    </context>
+</configuration>

@@ -11,14 +11,97 @@ import Habits from './pages/onboarding/Habits'
 import Results from './pages/onboarding/Results'
 import DashboardLayout from './components/layouts/DashboardLayout'
 import DashboardContent from './pages/dashboard/DashboardContent'
+import AdminDashboardContent from './pages/admin/AdminDashboardContent'
+import MiProgresoPage from './pages/progress/MiProgreso';
+import ConfiguracionPage from './pages/settings/Configuracion';
+
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import CRUD_usuarios from './pages/admin/usuarios/CRUD_usuarios'
+
+// Admin CRUD Imports
+import EmocionesList from './pages/admin/emociones/EmocionesList';
+import EmocionForm from './pages/admin/emociones/EmocionForm';
+import HabitosList from './pages/admin/habitos/HabitosList';
+import HabitoForm from './pages/admin/habitos/HabitoForm';
+import MotivosList from './pages/admin/motivos/MotivosList';
+import MotivoForm from './pages/admin/motivos/MotivoForm';
+import DeseosList from './pages/admin/deseos/DeseosList';
+import DeseoForm from './pages/admin/deseos/DeseoForm';
+import FormulariosList from './pages/admin/formularios/FormulariosList';
+import FormularioForm from './pages/admin/formularios/FormularioForm';
+import Reportes_page from './pages/admin/reportes/Reportes_page'
+import Settings_adm_page from './pages/admin/Settings/Settings_adm_page'
+import Create_usuario from './pages/admin/usuarios/Create_usuario'
+import Update_usuario from './pages/admin/usuarios/Update_usuario'
 
 const App = lazy(() => import('./App'));
 
 const queryClient = new QueryClient()
 
 const router = createBrowserRouter([
+  /* Dashboard para Admin */
+  {
+    path: '/admin',
+    element: (
+      <ProtectedRoute requiredRole="administrador">
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        path: 'dashboard',
+        element: <AdminDashboardContent />,
+      },
+      {
+        path: 'usuarios',
+        element: <CRUD_usuarios />
+      },
+      {
+        path: 'usuarios/create',
+        element: <Create_usuario />
+      },
+      {
+        path: 'usuarios/update/:id',
+        element: <Update_usuario />
+      },
+      
+      // Emociones
+      { path: 'emociones', element: <EmocionesList /> },
+      { path: 'emociones/create', element: <EmocionForm /> },
+      { path: 'emociones/edit/:id', element: <EmocionForm /> },
+
+      // Habitos
+      { path: 'habitos', element: <HabitosList /> },
+      { path: 'habitos/create', element: <HabitoForm /> },
+      { path: 'habitos/edit/:id', element: <HabitoForm /> },
+
+      // Motivos
+      { path: 'motivos', element: <MotivosList /> },
+      { path: 'motivos/create', element: <MotivoForm /> },
+      { path: 'motivos/edit/:id', element: <MotivoForm /> },
+
+      // Deseos
+      { path: 'deseos', element: <DeseosList /> },
+      { path: 'deseos/create', element: <DeseoForm /> },
+      { path: 'deseos/edit/:id', element: <DeseoForm /> },
+
+      // Formularios
+      { path: 'formularios', element: <FormulariosList /> },
+      { path: 'formularios/create', element: <FormularioForm /> },
+      { path: 'formularios/edit/:id', element: <FormularioForm /> },
+
+      {
+        path: 'reportes',
+        element: <Reportes_page />
+      },
+      {
+        path: 'configuracion',
+        element: <Settings_adm_page />
+      }
+    ]
+  },
+
   {
     path: '/login',
     element: <Login_Register />
@@ -63,6 +146,14 @@ const router = createBrowserRouter([
         path: '/dashboard',
         element: <DashboardContent />
       },
+      {
+        path: '/progress',
+        element: <MiProgresoPage />
+      },
+      {
+        path: '/configuration',  
+        element: <ConfiguracionPage />
+      }
       // Agrega más rutas aquí que necesiten el mismo layout
       // {
       //   path: '/profile',
@@ -75,22 +166,6 @@ const router = createBrowserRouter([
     ]
   },
 
-  /* Dashboard para Admin (si lo necesitas separado) */
-  /*{
-    path: '/admin/dashboard',
-    element: (
-      <ProtectedRoute requiredRole="administrador">
-        <DashboardLayout />
-      </ProtectedRoute>
-    ),
-    children: [
-      {
-        index: true,
-        element: <AdminDashboardContent />
-      }
-    ]
-  },*/
-
   /* Rutas públicas con NavBar y Footer */
   {
     element: <App />,
@@ -98,10 +173,6 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home />
-      },
-      {
-        path: '/hola',
-        element: <h1>Hola Mundo</h1>
       }
     ]
   },

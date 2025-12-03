@@ -1,4 +1,5 @@
 
+
 import { logger } from './Logger';
 
 class StorageService {
@@ -66,6 +67,10 @@ class StorageService {
 
 
   setToken(token, expiresIn = null) {
+    // Debug: Verificar el formato del token
+    console.log('💾 Storing token:', token);
+    console.log('⏰ Token expires in:', expiresIn, 'seconds');
+    
     const success = this._setItem(this.KEYS.TOKEN, token);
     
     if (success && expiresIn) {
@@ -116,6 +121,7 @@ class StorageService {
     this._removeItem(this.KEYS.REFRESH_TOKEN);
     this._removeItem(this.KEYS.USER);
     this._removeItem(this.KEYS.TOKEN_EXPIRY);
+    window.location.href = "/login";
   }
 
 

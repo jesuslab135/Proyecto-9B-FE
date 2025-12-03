@@ -1,164 +1,155 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Pagination from '../Global_components/Pagination';
+import './CrudList.css';
 
-export default function CrudList({ resourceName, fetchList, onDelete, createPath, editPathPrefix, renderItem }) {
-  const [items, setItems] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
+export default function CrudList({ 
+  title, 
+  subtitle, 
+  iconClass = "fas fa-cogs", 
+  fetchList, 
+  onDelete, 
+  createPath, 
+  editPathPrefix, 
+  columns = [] 
+}) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 5;
 
-  React.useEffect(() => {
+  useEffect(() => {
     let mounted = true;
     setLoading(true);
     fetchList()
       .then((res) => {
-        if (mounted) setItems(res || []);
+        if (mounted) {
+          if (Array.isArray(res)) {
+            setItems(res);
+          } else if (res && Array.isArray(res.results)) {
+            setItems(res.results);
+          } else if (res && Array.isArray(res.data)) {
+            setItems(res.data);
+          } else {
+            setItems([]);
+            console.warn('CrudList: fetchList did not return an array or expected object structure', res);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('CrudList: Error fetching list', err);
+        if (mounted) setItems([]);
       })
       .finally(() => mounted && setLoading(false));
     return () => (mounted = false);
   }, [fetchList]);
 
   const handleDelete = async (id) => {
-    await onDelete(id);
-    setItems((s) => s.filter((i) => i.id !== id));
+    if (window.confirm('¿Estás seguro de que deseas eliminar este elemento?')) {
+        await onDelete(id);
+        setItems((s) => s.filter((i) => i.id !== id));
+    }
   };
 
-  return (
-    <div className="p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">{resourceName}</h2>
-        <Link className="btn btn-primary" to={createPath}>Crear</Link>
-      </div>
+  // Filter items
+  const filteredItems = items.filter(item => {
+    if (!searchTerm) return true;
+    return Object.values(item).some(val => 
+      String(val).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
-      {loading ? (
-        <div>Cargando...</div>
-      ) : (
-        <div className="grid gap-2">
-          {items.map((item) => (
-            <div key={item.id} className="p-3 border rounded flex justify-between items-center">
-              <div>{renderItem ? renderItem(item) : JSON.stringify(item)}</div>
-              <div className="space-x-2">
-                <Link className="btn btn-secondary" to={`${editPathPrefix}/${item.id}`}>Editar</Link>
-                <button className="btn btn-danger" onClick={() => handleDelete(item.id)}>Eliminar</button>
-              </div>
-            </div>
-          ))}
+  // Pagination
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const start = (page - 1) * itemsPerPage;
+  const paginatedData = filteredItems.slice(start, start + itemsPerPage);
+
+  return (
+    <>
+      <div className="crud-header">
+        <div className="crud-header-icon">
+          <i className={iconClass}></i>
         </div>
-      )}
-    </div>
-  );
-}
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-
-export default function CrudList({ fetchList, onDelete, resourceName, renderItem, createPath, editPathPrefix }) {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const load = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchList();
-      setItems(data || []);
-    } catch (err) {
-      setError(err.message || String(err));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { load(); }, []);
-
-  const handleDelete = async (id) => {
-    if (!confirm('¿Eliminar este elemento?')) return;
-    try {
-      await onDelete(id);
-      load();
-    } catch (err) {
-      alert('Error eliminando: ' + (err.message || err));
-    }
-  };
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">{resourceName}</h2>
-        {createPath && <Link to={createPath} className="btn">Crear</Link>}
+        <div className="crud-header-titles">
+          <h2>{title}</h2>
+          <h3>{subtitle}</h3>
+        </div>
       </div>
 
-      {loading && <p>⏳ Cargando...</p>}
-      {error && <p className="text-red-600">Error: {error}</p>}
-
-      <div className="space-y-3">
-        {items.length === 0 && !loading && <p className="text-sm text-gray-500">No hay registros</p>}
-        {items.map(item => (
-          <div key={item.id} className="p-4 bg-white rounded shadow-sm flex items-center justify-between">
-            <div className="flex-1">{renderItem(item)}</div>
-            <div className="ml-4 flex gap-2">
-              {editPathPrefix && <Link to={`${editPathPrefix}/${item.id}`} className="text-blue-600">Editar</Link>}
-              <button onClick={() => handleDelete(item.id)} className="text-red-600">Eliminar</button>
+      <div className="crud-container">
+        {loading ? (
+           <p style={{display: "flex", alignContent: "center", textAlign:"center", width:"100%", height: "100%"}}>Cargando...</p>
+        ) : (
+          <>
+            <div className="crud-search-bar-container">
+              <div className="crud-search-bar">
+                <i className="fas fa-search"></i>
+                <input
+                  type="text"
+                  placeholder="Buscar..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setPage(1);
+                  }}
+                />
+              </div>
+              <Link className="crud-create-btn" to={createPath}>
+                <p>Crear nuevo</p>
+                <i className="fas fa-plus-circle"></i>
+              </Link>
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 
-export default function CrudList({ fetchList, onDelete, resourceName, renderItem, createPath, editPathPrefix }) {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const load = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchList();
-      setItems(data || []);
-    } catch (err) {
-      setError(err.message || String(err));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { load(); }, []);
-
-  const handleDelete = async (id) => {
-    if (!confirm('¿Eliminar este elemento?')) return;
-    try {
-      await onDelete(id);
-      load();
-    } catch (err) {
-      alert('Error eliminando: ' + (err.message || err));
-    }
-  };
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">{resourceName}</h2>
-        {createPath && <Link to={createPath} className="btn">Crear</Link>}
-      </div>
-
-      {loading && <p>⏳ Cargando...</p>}
-      {error && <p className="text-red-600">Error: {error}</p>}
-
-      <div className="space-y-3">
-        {items.length === 0 && !loading && <p className="text-sm text-gray-500">No hay registros</p>}
-        {items.map(item => (
-          <div key={item.id} className="p-4 bg-white rounded shadow-sm flex items-center justify-between">
-            <div className="flex-1">{renderItem(item)}</div>
-            <div className="ml-4 flex gap-2">
-              {editPathPrefix && <Link to={`${editPathPrefix}/${item.id}`} className="text-blue-600">Editar</Link>}
-              <button onClick={() => handleDelete(item.id)} className="text-red-600">Eliminar</button>
+            <div className="crud-table-container">
+              <table className="crud-table">
+                <thead>
+                  <tr>
+                    {columns.map((col, idx) => (
+                      <th key={idx}>{col.header}</th>
+                    ))}
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedData.map((item) => (
+                    <tr key={item.id}>
+                      {columns.map((col, idx) => (
+                        <td key={idx}>
+                          {col.render ? col.render(item) : item[col.accessor]}
+                        </td>
+                      ))}
+                      <td className="crud-actions">
+                        <Link className="crud-action-btn crud-edit-btn" to={`${editPathPrefix}/${item.id}`}>
+                          <i className="fas fa-edit"></i>
+                        </Link>
+                        <div className="crud-action-btn crud-delete-btn" onClick={() => handleDelete(item.id)}>
+                          <i className="fas fa-trash-alt"></i>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {paginatedData.length === 0 && (
+                      <tr>
+                          <td colSpan={columns.length + 1} style={{textAlign: 'center'}}>No se encontraron resultados</td>
+                      </tr>
+                  )}
+                </tbody>
+              </table>
+              
+              {totalPages > 1 && (
+                  <div className="crud-pagination-container">
+                    <Pagination 
+                      currentPage={page}
+                      totalPages={totalPages}
+                      onPageChange={setPage}
+                    />
+                  </div>
+              )}
             </div>
-          </div>
-        ))}
+          </>
+        )}
       </div>
-    </div>
+    </>
   );
 }

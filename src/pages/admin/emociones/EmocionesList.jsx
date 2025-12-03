@@ -3,40 +3,22 @@ import CrudList from '../../../components/admin/CrudList';
 import { adminResourcesService } from '../../../services/AdminResourcesService';
 
 export default function EmocionesList() {
-  return (
-    <CrudList
-      resourceName="Emociones"
-      fetchList={() => adminResourcesService.listEmociones()}
-      onDelete={(id) => adminResourcesService.deleteEmocion(id)}
-      createPath="/admin/emociones/create"
-      editPathPrefix="/admin/emociones/edit"
-      renderItem={(item) => (
-        <div>
-          <div className="font-semibold">{item.nombre || `Emoción #${item.id}`}</div>
-          <div className="text-sm text-gray-600">Intensidad: {item.intensidad ?? 'N/A'}</div>
-        </div>
-      )}
-    />
-  );
-}
-import React from 'react';
-import CrudList from '../../../components/admin/CrudList';
-import { adminResourcesService } from '../../../services/AdminResourcesService';
+  const columns = [
+    { header: 'ID', accessor: 'id' },
+    { header: 'Nombre', accessor: 'nombre' },
+    { header: 'Intensidad', accessor: 'intensidad' }
+  ];
 
-export default function EmocionesList() {
   return (
     <CrudList
-      resourceName="Emociones"
+      title="Administración de Emociones"
+      subtitle="Gestiona las emociones de la plataforma"
+      iconClass="fas fa-heart"
       fetchList={() => adminResourcesService.listEmociones()}
       onDelete={(id) => adminResourcesService.deleteEmocion(id)}
       createPath="/admin/emociones/create"
       editPathPrefix="/admin/emociones/edit"
-      renderItem={(item) => (
-        <div>
-          <div className="font-semibold">{item.nombre || `Emoción #${item.id}`}</div>
-          <div className="text-sm text-gray-600">Intensidad: {item.intensidad ?? 'N/A'}</div>
-        </div>
-      )}
+      columns={columns}
     />
   );
 }
