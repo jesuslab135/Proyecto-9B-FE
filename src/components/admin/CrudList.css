@@ -1,17 +1,56 @@
-/* ---------------------- */
-/* CONTENEDOR GENERAL     */
-/* ---------------------- */
-.container {
+/* Header Styles */
+.crud-header {
+    display: flex;
+    padding: 2rem;
+    width: 100%;
+    justify-content: start;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.crud-header-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 6rem;
+    height: 5rem;
+    background-color: #4A90E2;
+    border-radius: 15px;
+}
+
+.crud-header-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.crud-header-titles {
+    display: flex;
+    flex-direction: column;
+}
+
+.crud-header-titles h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.crud-header-titles h3 {
+    font-size: 1rem;
+    color: #666666;
+    margin: 0;
+}
+
+/* Container */
+.crud-container {
     padding-left: 2rem;
     padding-right: 2rem;
     display: block;
     margin-bottom: 2rem;
 }
 
-/* ---------------------- */
-/* BARRA DE BÚSQUEDA      */
-/* ---------------------- */
-.search-bar-container {
+/* Search Bar */
+.crud-search-bar-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -24,7 +63,7 @@
     gap: 1rem;
 }
 
-.search-bar {
+.crud-search-bar {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -36,7 +75,7 @@
     max-width: 100%;
 }
 
-.search-bar input {
+.crud-search-bar input {
     border: none;
     background-color: transparent;
     outline: none;
@@ -44,7 +83,7 @@
     width: 100%;
 }
 
-.nvo-usuario-btn {
+.crud-create-btn {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -54,12 +93,14 @@
     border-radius: 8px;
     cursor: pointer;
     white-space: nowrap;
+    text-decoration: none; /* For Link */
+}
+.crud-create-btn:hover {
+    color: white;
 }
 
-/* ---------------------- */
-/* TABLA                  */
-/* ---------------------- */
-.table-container {
+/* Table */
+.crud-table-container {
     margin-top: 1rem;
     min-height: 75vh;
     overflow-x: auto;
@@ -69,40 +110,24 @@
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
 }
 
-.users-table {
+.crud-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.users-table th,
-.users-table td {
+.crud-table th,
+.crud-table td {
     padding: 1rem;
     border-bottom: 1px solid #E0E0E0;
+    text-align: left;
 }
 
-.datos-usuario {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-}
-
-.nombre-permiso p {
-    margin: 0;
-    font-weight: 600;
-}
-
-.nombre-permiso span {
-    font-size: 0.9rem;
-}
-
-.acciones-usuario {
+.crud-actions {
     display: flex;
     gap: 1rem;
 }
 
-.edit-container,
-.delete-container {
+.crud-action-btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -110,32 +135,31 @@
     border-radius: 8px;
     cursor: pointer;
     transition: 0.3s ease;
+    text-decoration: none;
 }
 
-.edit-container {
+.crud-edit-btn {
     border: 2px solid #4A90E2;
     color: #4A90E2;
 }
 
-.delete-container {
+.crud-delete-btn {
     border: 2px solid #E94E4E;
     color: #E94E4E;
 }
 
-.edit-container:hover {
+.crud-edit-btn:hover {
     background-color: #4A90E2;
     color: white;
 }
 
-.delete-container:hover {
+.crud-delete-btn:hover {
     background-color: #E94E4E;
     color: white;
 }
 
-/* ---------------------- */
-/* PAGINACIÓN             */
-/* ---------------------- */
-.pagination-container {
+/* Pagination */
+.crud-pagination-container {
     display: flex;
     justify-content: center;
     align-items: end;
@@ -143,82 +167,46 @@
     gap: 2rem;
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    padding: 0.5rem;
-    border: 1px solid #CCCCCC;
-    border-radius: 8px;
-    min-width: 3rem;
-    cursor: pointer;
-}
-
-.pagination.active {
-    background-color: #4A90E2;
-    color: white;
-    border: none;
-}
-
-/* ---------------------- */
-/* RESPONSIVE             */
-/* ---------------------- */
-
-/* Tablets horizontales y laptops pequeñas */
+/* Responsive */
 @media (max-width: 992px) {
-    .search-bar {
+    .crud-search-bar {
         width: 100%;
     }
 }
 
-/* Tablets verticales */
 @media (max-width: 768px) {
-    .search-bar-container {
+    .crud-header {
+        padding: 1.5rem;
+        justify-content: flex-start;
+    }
+    .crud-header-icon {
+        width: 5rem;
+        height: 4rem;
+    }
+    .crud-search-bar-container {
         flex-direction: column;
         align-items: stretch;
         gap: 1rem;
     }
-
-    .nvo-usuario-btn {
+    .crud-create-btn {
         width: 100%;
         justify-content: center;
     }
-
-    .acciones-usuario {
-        gap: 0.5rem;
-    }
-
-    .edit-container,
-    .delete-container {
-        padding: 0.7rem;
-    }
 }
 
-/* Móviles */
 @media (max-width: 480px) {
-    .container {
+    .crud-container {
         padding-left: 1rem;
         padding-right: 1rem;
     }
-
-    .users-table th,
-    .users-table td {
-        padding: 0.7rem;
-        font-size: 0.85rem;
-    }
-
-    .datos-usuario {
+    .crud-header {
+        padding: 1rem;
         flex-direction: column;
-        align-items: start;
-        gap: 0.3rem;
+        align-items: flex-start;
+        gap: 1rem;
     }
-
-    .nvo-usuario-btn {
-        padding: 0.8rem;
-    }
-
-    .edit-container,
-    .delete-container {
-        padding: 0.5rem;
+    .crud-header-icon {
+        width: 4rem;
+        height: 3.5rem;
     }
 }
-

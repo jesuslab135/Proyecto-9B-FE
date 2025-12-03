@@ -1,0 +1,38 @@
+{
+  "login_success_user": {
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMjMsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNzEwMDAwMDAwfQ.signature",
+    "refresh": "def456...",
+    "user": {
+      "id": 123,
+      "username": "usuario_normal",
+      "email": "user@example.com"
+    }
+  },
+  "login_success_admin": {
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0NTYsInJvbGUiOiJhZG1pbiIsImlzX3N1cGVydXNlciI6dHJ1ZSwiZXhwIjoxNzEwMDAwMDAwfQ.signature",
+    "refresh": "abc123...",
+    "user": {
+      "id": 456,
+      "username": "admin",
+      "email": "admin@example.com",
+      "is_superuser": true
+    }
+  },
+  "token_expired": {
+    "detail": "Given token not valid for any token type",
+    "code": "token_not_valid",
+    "messages": [
+      {
+        "token_class": "AccessToken",
+        "token_type": "access",
+        "message": "Token is invalid or expired"
+      }
+    ]
+  },
+  "access_denied": {
+    "detail": "You do not have permission to perform this action."
+  },
+  "auth_missing": {
+    "detail": "Authentication credentials were not provided."
+  }
+}

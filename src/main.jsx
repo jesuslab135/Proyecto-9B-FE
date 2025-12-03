@@ -30,6 +30,8 @@ import DeseosList from './pages/admin/deseos/DeseosList';
 import DeseoForm from './pages/admin/deseos/DeseoForm';
 import FormulariosList from './pages/admin/formularios/FormulariosList';
 import FormularioForm from './pages/admin/formularios/FormularioForm';
+import Reportes_page from './pages/admin/reportes/Reportes_page'
+import Settings_adm_page from './pages/admin/Settings/Settings_adm_page'
 
 const App = lazy(() => import('./App'));
 
@@ -81,11 +83,11 @@ const router = createBrowserRouter([
 
       {
         path: 'reportes',
-        element: <div className="p-8"><h1>Reportes (En construcción)</h1></div>
+        element: <Reportes_page />
       },
       {
         path: 'configuracion',
-        element: <div className="p-8"><h1>Configuración Admin (En construcción)</h1></div>
+        element: <Settings_adm_page />
       }
     ]
   },
