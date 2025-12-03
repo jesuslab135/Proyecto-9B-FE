@@ -64,7 +64,6 @@ export default function DashboardHR() {
   // Actualizar desde API REST cuando WebSocket deshabilitado O falla
   useEffect(() => {
     if ((!USE_WEBSOCKET || wsError) && todayData && statsData) {
-      console.log('📊 HR Data received:', { todayData, statsData });
       setHrData({
         ventanas: todayData.ventanas || [],
         promedio_dia: todayData.promedio_dia,
