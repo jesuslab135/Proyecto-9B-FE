@@ -64,18 +64,22 @@ export default function DashboardHR() {
   // Actualizar desde API REST cuando WebSocket deshabilitado O falla
   useEffect(() => {
     if ((!USE_WEBSOCKET || wsError) && todayData && statsData) {
-      console.log('📊 todayData:', todayData);
-      console.log('📊 statsData:', statsData);
-      console.log('📊 ventanas:', todayData?.ventanas);
+      // El backend devuelve todayData como array, acceder al primer elemento
+      const today = Array.isArray(todayData) ? todayData[0] : todayData;
+      const stats = Array.isArray(statsData) ? statsData[0] : statsData;
+      
+      console.log('📊 today:', today);
+      console.log('📊 stats:', stats);
+      console.log('📊 ventanas:', today?.ventanas);
       
       setHrData({
-        ventanas: todayData.ventanas || [],
-        promedio_dia: todayData.promedio_dia,
+        ventanas: today?.ventanas || [],
+        promedio_dia: today?.promedio_dia,
         stats: {
-          promedio: statsData.hr_promedio_general,
-          minimo: statsData.hr_minimo,
-          maximo: statsData.hr_maximo,
-          desviacion: statsData.hr_desviacion
+          promedio: stats?.hr_promedio_general,
+          minimo: stats?.hr_minimo,
+          maximo: stats?.hr_maximo,
+          desviacion: stats?.hr_desviacion
         }
       });
     }
