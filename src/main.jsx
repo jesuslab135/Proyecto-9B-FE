@@ -17,23 +17,40 @@ import ConfiguracionPage from './pages/settings/Configuracion';
 
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import CRUD_usuarios from './pages/admin/usuarios/CRUD_usuarios'
 
-// Admin CRUD Imports
-import EmocionesList from './pages/admin/emociones/EmocionesList';
-import EmocionForm from './pages/admin/emociones/EmocionForm';
-import HabitosList from './pages/admin/habitos/HabitosList';
-import HabitoForm from './pages/admin/habitos/HabitoForm';
-import MotivosList from './pages/admin/motivos/MotivosList';
-import MotivoForm from './pages/admin/motivos/MotivoForm';
-import DeseosList from './pages/admin/deseos/DeseosList';
-import DeseoForm from './pages/admin/deseos/DeseoForm';
-import FormulariosList from './pages/admin/formularios/FormulariosList';
-import FormularioForm from './pages/admin/formularios/FormularioForm';
-import Reportes_page from './pages/admin/reportes/Reportes_page'
-import Settings_adm_page from './pages/admin/Settings/Settings_adm_page'
+// Admin Pages - Usuarios
+import CRUD_usuarios from './pages/admin/usuarios/CRUD_usuarios'
 import Create_usuario from './pages/admin/usuarios/Create_usuario'
 import Update_usuario from './pages/admin/usuarios/Update_usuario'
+
+// Admin Pages - Habitos
+import CRUD_habitos from './pages/admin/habitos/CRUD_habitos'
+import Create_habito from './pages/admin/habitos/Create_habito'
+import Edit_habito from './pages/admin/habitos/Edit_habito'
+
+// Admin Pages - Deseos
+import CRUD_deseos from './pages/admin/deseos/CRUD_deseos'
+import Create_deseo from './pages/admin/deseos/Create_deseo'
+import Edit_deseo from './pages/admin/deseos/Edit_deseo'
+
+// Admin Pages - Emociones
+import CRUD_emociones from './pages/admin/emociones/CRUD_emociones'
+import Create_emocion from './pages/admin/emociones/Create_emocion'
+import Edit_emocion from './pages/admin/emociones/Edit_emocion'
+
+// Admin Pages - Motivos
+import CRUD_motivos from './pages/admin/motivos/CRUD_motivos'
+import Create_motivo from './pages/admin/motivos/Create_motivo'
+import Edit_motivo from './pages/admin/motivos/Edit_motivo'
+
+// Admin Pages - Formularios
+import CRUD_formularios from './pages/admin/formularios/CRUD_formularios'
+import Create_formulario from './pages/admin/formularios/Create_formulario'
+import Edit_formulario from './pages/admin/formularios/Edit_formulario'
+
+// Admin Pages - Otros
+import Reportes_page from './pages/admin/reportes/Reportes_page'
+import Settings_adm_page from './pages/admin/Settings/Settings_adm_page'
 
 const App = lazy(() => import('./App'));
 
@@ -66,30 +83,30 @@ const router = createBrowserRouter([
         element: <Update_usuario />
       },
       
-      // Emociones
-      { path: 'emociones', element: <EmocionesList /> },
-      { path: 'emociones/create', element: <EmocionForm /> },
-      { path: 'emociones/edit/:id', element: <EmocionForm /> },
-
       // Habitos
-      { path: 'habitos', element: <HabitosList /> },
-      { path: 'habitos/create', element: <HabitoForm /> },
-      { path: 'habitos/edit/:id', element: <HabitoForm /> },
-
-      // Motivos
-      { path: 'motivos', element: <MotivosList /> },
-      { path: 'motivos/create', element: <MotivoForm /> },
-      { path: 'motivos/edit/:id', element: <MotivoForm /> },
+      { path: 'habitos', element: <CRUD_habitos /> },
+      { path: 'habitos/create', element: <Create_habito /> },
+      { path: 'habitos/edit/:id', element: <Edit_habito /> },
 
       // Deseos
-      { path: 'deseos', element: <DeseosList /> },
-      { path: 'deseos/create', element: <DeseoForm /> },
-      { path: 'deseos/edit/:id', element: <DeseoForm /> },
+      { path: 'deseos', element: <CRUD_deseos /> },
+      { path: 'deseos/create', element: <Create_deseo /> },
+      { path: 'deseos/edit/:id', element: <Edit_deseo /> },
+
+      // Emociones
+      { path: 'emociones', element: <CRUD_emociones /> },
+      { path: 'emociones/create', element: <Create_emocion /> },
+      { path: 'emociones/edit/:id', element: <Edit_emocion /> },
+
+      // Motivos
+      { path: 'motivos', element: <CRUD_motivos /> },
+      { path: 'motivos/create', element: <Create_motivo /> },
+      { path: 'motivos/edit/:id', element: <Edit_motivo /> },
 
       // Formularios
-      { path: 'formularios', element: <FormulariosList /> },
-      { path: 'formularios/create', element: <FormularioForm /> },
-      { path: 'formularios/edit/:id', element: <FormularioForm /> },
+      { path: 'formularios', element: <CRUD_formularios /> },
+      { path: 'formularios/create', element: <Create_formulario /> },
+      { path: 'formularios/edit/:id', element: <Edit_formulario /> },
 
       {
         path: 'reportes',
