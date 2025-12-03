@@ -14,13 +14,12 @@ const envBase = import.meta?.env?.VITE_API_BASE_URL ||
     : "https://backend9b-production.up.railway.app/api/"); // added
 
 // ✅ WebSocket Base URL (wss:// en Railway, ws:// en local)
-// Estrategia: Reemplazar /api (con o sin /) por /ws/ y asegurar una sola barra final
-const wsBase = envBase
-  .replace('http://', 'ws://')
-  .replace('https://', 'wss://');
-
-// Remover /api o /api/ y agregar /ws/
-export const WS_BASE_URL = wsBase.replace(/\/api\/?/, '/ws/');
+// Usar variable de entorno directa si existe, sino construir desde API URL
+export const WS_BASE_URL = import.meta.env.VITE_WS_URL || 
+  envBase
+    .replace('http://', 'ws://')
+    .replace('https://', 'wss://')
+    .replace(/\/api\/?/, '/ws/');
 
 console.log('🌐 API Base URL:', envBase);
 console.log('🔌 WebSocket URL:', WS_BASE_URL);
