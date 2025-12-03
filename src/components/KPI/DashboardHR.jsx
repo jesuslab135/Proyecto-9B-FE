@@ -11,12 +11,12 @@ export default function DashboardHR() {
   
   const [hrData, setHrData] = useState(null);
   
-  // ✅ WebSocket habilitado - Usar API REST solo si WebSocket falla
-  const USE_WEBSOCKET = true;
+  // ⚠️ WebSocket deshabilitado temporalmente - Usar API REST (más estable en Railway)
+  const USE_WEBSOCKET = false;
   
-  // Fallback: API REST (solo si WebSocket deshabilitado)
-  const { data: todayData } = useHeartRateToday(consumidorId);
-  const { data: statsData } = useHeartRateStats(consumidorId);
+  // API REST como fuente principal
+  const { data: todayData, refetch: refetchToday } = useHeartRateToday(consumidorId);
+  const { data: statsData, refetch: refetchStats } = useHeartRateStats(consumidorId);
   
   // ✅ WebSocket connection usando URL centralizada
   const { isConnected, error: wsError } = useWebSocket(
@@ -77,6 +77,18 @@ export default function DashboardHR() {
     }
   }, [todayData, statsData, USE_WEBSOCKET, wsError]);
 
+  // Auto-refresh cada 10 segundos cuando usa API REST
+  useEffect(() => {
+    if (!USE_WEBSOCKET) {
+      const interval = setInterval(() => {
+        refetchToday();
+        refetchStats();
+      }, 10000); // Cada 10 segundos
+      
+      return () => clearInterval(interval);
+    }
+  }, [USE_WEBSOCKET, refetchToday, refetchStats]);
+
   // No mostrar error si tenemos fallback de API REST funcionando
 
   if (!hrData) {
@@ -94,12 +106,10 @@ export default function DashboardHR() {
       {/* Stats Header */}
       <div className="hr-stats-header">
         <h4>Frecuencia cardíaca</h4>
-        {USE_WEBSOCKET && (
-          <div className={`live-indicator ${isConnected ? 'connected' : 'disconnected'}`}>
-            <div className={`pulse-dot ${isConnected ? 'active' : ''}`}></div>
-            <span>{isConnected ? 'EN VIVO' : 'DESCONECTADO'}</span>
-          </div>
-        )}
+        <div className={`live-indicator ${(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && hrData) ? 'connected' : 'disconnected'}`}>
+          <div className={`pulse-dot ${(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && hrData) ? 'active' : ''}`}></div>
+          <span>{(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && hrData) ? 'CONECTADO' : 'DESCONECTADO'}</span>
+        </div>
       </div>
 
       <div className="hr-stats-values">
