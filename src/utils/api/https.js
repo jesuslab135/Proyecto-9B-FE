@@ -11,7 +11,7 @@ const isDevelopment = import.meta.env.MODE === 'development';
 const envBase = import.meta?.env?.VITE_API_BASE_URL || 
   (isDevelopment 
     ? "http://127.0.0.1:8000/api/" 
-    : "https://backend9b-production.up.railway.app/api/");
+    : "https://backend9b-production.up.railway.app/api/"); // added
 
 // ✅ WebSocket Base URL (wss:// en Railway, ws:// en local)
 export const WS_BASE_URL = envBase
