@@ -12,10 +12,10 @@ export default function DashboardSensors() {
   const [sensorData, setSensorData] = useState([]);
   const [latestReading, setLatestReading] = useState(null);
   
-  // ✅ WebSocket habilitado - Usar API REST solo si WebSocket falla
-  const USE_WEBSOCKET = true;
+  // ⚠️ WebSocket deshabilitado temporalmente - Usar API REST (más estable en Railway)
+  const USE_WEBSOCKET = false;
   
-  // Fallback: API REST (solo si WebSocket deshabilitado)
+  // API REST como fuente principal
   const { data: apiSensorData, refetch } = useSensorData(consumidorId);
   
   // ✅ WebSocket connection usando URL centralizada
@@ -86,12 +86,10 @@ export default function DashboardSensors() {
       {/* Real-time Indicator */}
       <div className="sensor-header">
         <h4>Datos de Sensores ESP32</h4>
-        {USE_WEBSOCKET && (
-          <div className={`live-indicator ${isConnected ? 'connected' : 'disconnected'}`}>
-            <div className={`pulse-dot ${isConnected ? 'active' : ''}`}></div>
-            <span>{isConnected ? 'EN VIVO' : 'DESCONECTADO'}</span>
-          </div>
-        )}
+        <div className={`live-indicator ${(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && latestReading) ? 'connected' : 'disconnected'}`}>
+          <div className={`pulse-dot ${(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && latestReading) ? 'active' : ''}`}></div>
+          <span>{(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && latestReading) ? 'CONECTADO' : 'DESCONECTADO'}</span>
+        </div>
       </div>
 
       {/* Latest Reading Timestamp */}
