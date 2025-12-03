@@ -1,56 +1,17 @@
-/* Header Styles */
-.crud-header {
-    display: flex;
-    padding: 2rem;
-    width: 100%;
-    justify-content: start;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.crud-header-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 6rem;
-    height: 5rem;
-    background-color: #4A90E2;
-    border-radius: 15px;
-}
-
-.crud-header-icon i {
-    font-size: 2rem;
-    color: white;
-}
-
-.crud-header-titles {
-    display: flex;
-    flex-direction: column;
-}
-
-.crud-header-titles h2 {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0;
-}
-
-.crud-header-titles h3 {
-    font-size: 1rem;
-    color: #666666;
-    margin: 0;
-}
-
-/* Container */
-.crud-container {
+/* ---------------------- */
+/* CONTENEDOR GENERAL     */
+/* ---------------------- */
+.container {
     padding-left: 2rem;
     padding-right: 2rem;
     display: block;
     margin-bottom: 2rem;
 }
 
-/* Search Bar */
-.crud-search-bar-container {
+/* ---------------------- */
+/* BARRA DE BÚSQUEDA      */
+/* ---------------------- */
+.search-bar-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -63,7 +24,7 @@
     gap: 1rem;
 }
 
-.crud-search-bar {
+.search-bar {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -75,7 +36,7 @@
     max-width: 100%;
 }
 
-.crud-search-bar input {
+.search-bar input {
     border: none;
     background-color: transparent;
     outline: none;
@@ -83,7 +44,7 @@
     width: 100%;
 }
 
-.crud-create-btn {
+.nvo-usuario-btn {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -93,14 +54,12 @@
     border-radius: 8px;
     cursor: pointer;
     white-space: nowrap;
-    text-decoration: none; /* For Link */
-}
-.crud-create-btn:hover {
-    color: white;
 }
 
-/* Table */
-.crud-table-container {
+/* ---------------------- */
+/* TABLA                  */
+/* ---------------------- */
+.table-container {
     margin-top: 1rem;
     min-height: 75vh;
     overflow-x: auto;
@@ -110,56 +69,74 @@
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
 }
 
-.crud-table {
+.users-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.crud-table th,
-.crud-table td {
+.users-table th,
+.users-table td {
     padding: 1rem;
     border-bottom: 1px solid #E0E0E0;
-    text-align: left;
 }
 
-.crud-actions {
+.datos-usuario {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 1rem;
 }
 
-.crud-action-btn {
+.nombre-permiso p {
+    margin: 0;
+    font-weight: 600;
+}
+
+.nombre-permiso span {
+    font-size: 0.9rem;
+}
+
+.acciones-usuario {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.edit-container,
+.delete-container {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 1rem;
     border-radius: 8px;
-    cursor: pointer;
     transition: 0.3s ease;
-    text-decoration: none;
 }
 
-.crud-edit-btn {
+.edit-container {
     border: 2px solid #4A90E2;
     color: #4A90E2;
 }
 
-.crud-delete-btn {
+.delete-container {
     border: 2px solid #E94E4E;
     color: #E94E4E;
 }
 
-.crud-edit-btn:hover {
+.edit-container:hover {
     background-color: #4A90E2;
     color: white;
 }
 
-.crud-delete-btn:hover {
+.delete-container:hover {
     background-color: #E94E4E;
     color: white;
 }
 
-/* Pagination */
-.crud-pagination-container {
+/* ---------------------- */
+/* PAGINACIÓN             */
+/* ---------------------- */
+.pagination-container {
     display: flex;
     justify-content: center;
     align-items: end;
@@ -167,46 +144,81 @@
     gap: 2rem;
 }
 
-/* Responsive */
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem;
+    border: 1px solid #CCCCCC;
+    border-radius: 8px;
+    min-width: 3rem;
+    cursor: pointer;
+}
+
+.pagination.active {
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+}
+
+/* ---------------------- */
+/* RESPONSIVE             */
+/* ---------------------- */
+
+/* Tablets horizontales y laptops pequeñas */
 @media (max-width: 992px) {
-    .crud-search-bar {
+    .search-bar {
         width: 100%;
     }
 }
 
+/* Tablets verticales */
 @media (max-width: 768px) {
-    .crud-header {
-        padding: 1.5rem;
-        justify-content: flex-start;
-    }
-    .crud-header-icon {
-        width: 5rem;
-        height: 4rem;
-    }
-    .crud-search-bar-container {
+    .search-bar-container {
         flex-direction: column;
         align-items: stretch;
         gap: 1rem;
     }
-    .crud-create-btn {
+
+    .nvo-usuario-btn {
         width: 100%;
         justify-content: center;
     }
+
+    .acciones-usuario {
+        gap: 0.5rem;
+    }
+
+    .edit-container,
+    .delete-container {
+        padding: 0.7rem;
+    }
 }
 
+/* Móviles */
 @media (max-width: 480px) {
-    .crud-container {
+    .container {
         padding-left: 1rem;
         padding-right: 1rem;
     }
-    .crud-header {
-        padding: 1rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+
+    .users-table th,
+    .users-table td {
+        padding: 0.7rem;
+        font-size: 0.85rem;
     }
-    .crud-header-icon {
-        width: 4rem;
-        height: 3.5rem;
+
+    .datos-usuario {
+        flex-direction: column;
+        align-items: start;
+        gap: 0.3rem;
+    }
+
+    .nvo-usuario-btn {
+        padding: 0.8rem;
+    }
+
+    .edit-container,
+    .delete-container {
+        padding: 0.5rem;
     }
 }
