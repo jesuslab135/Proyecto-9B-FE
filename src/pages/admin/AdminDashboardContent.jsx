@@ -59,7 +59,7 @@ export default function AdminDashboardContent() {
           </div>
         </Link>
 
-        <Link to={"/admin/deseos"} class="dashboard-card">
+        {/* <Link to={"/admin/deseos"} class="dashboard-card">
           <div class="icon-circle" style={{ background: "var(--red);" }}>
             <i class="fas fa-fire"></i>
           </div>
@@ -77,7 +77,7 @@ export default function AdminDashboardContent() {
             <h3>Formularios</h3>
             <p>Gestionar formularios</p>
           </div>
-        </Link>
+        </Link> */}
       </div>
     </div>
   );
