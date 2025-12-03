@@ -48,6 +48,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.5.2",
     "input-otp": "^1.4.1",
+    "jspdf": "^3.0.4",
     "lucide-react": "^0.468.0",
     "mocha": "^11.7.5",
     "postcss": "^8.5.6",

@@ -8,7 +8,11 @@ import { Link } from "react-router-dom";
 const Table_users = () => {
   const [users, setUsers] = useState([]);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [loading, setLoading] = useState(true);
+
+  const [orderLatest, setOrderLatest] = useState(false);
 
   const itemsPerPage = 5;
   const [page, setPage] = useState(1);
@@ -31,35 +35,40 @@ const Table_users = () => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+  setPage(1);
+}, [searchTerm]);
+
+
   // Funcion para editar al usuario
 
   // Handle profile update
-    // const handleProfileUpdate = async (e) => {
-    //   e.preventDefault();
-    //   setLoading(true);
-    //   setMessage({ type: '', text: '' });
-      
-    //   try {
-    //     await UsuariosAPI.patch(users.id, {
-    //       nombre: profileData.nombre,
-    //       telefono: profileData.telefono,
-    //       // Email usually shouldn't be changed without verification
-    //     });
-        
-    //     // Update local user data
-    //     const updatedUser = { ...users, ...profileData };
-    //     authService.currentUser = updatedUser;
-    //     localStorage.setItem('user', JSON.stringify(updatedUser));
-        
-    //     setMessage({ type: 'success', text: '✓ Perfil actualizado exitosamente' });
-    //     logger.info('Profile updated successfully');
-    //   } catch (error) {
-    //     setMessage({ type: 'error', text: '✗ Error al actualizar perfil' });
-    //     logger.error('Profile update failed', error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
+  // const handleProfileUpdate = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setMessage({ type: '', text: '' });
+
+  //   try {
+  //     await UsuariosAPI.patch(users.id, {
+  //       nombre: profileData.nombre,
+  //       telefono: profileData.telefono,
+  //       // Email usually shouldn't be changed without verification
+  //     });
+
+  //     // Update local user data
+  //     const updatedUser = { ...users, ...profileData };
+  //     authService.currentUser = updatedUser;
+  //     localStorage.setItem('user', JSON.stringify(updatedUser));
+
+  //     setMessage({ type: 'success', text: '✓ Perfil actualizado exitosamente' });
+  //     logger.info('Profile updated successfully');
+  //   } catch (error) {
+  //     setMessage({ type: 'error', text: '✗ Error al actualizar perfil' });
+  //     logger.error('Profile update failed', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Funcion para eliminar al usuario con Soft Delete
   const eliminarUsuario = async (id) => {
@@ -77,12 +86,25 @@ const Table_users = () => {
     }
   };
 
-  // Math.ceil redondea hacia arriba al entero más cercano
-  const totalPages = Math.ceil(users.length / itemsPerPage);
+  // Filtros dinámicos
+  const filteredUsers = users.filter((user) => {
+    const term = searchTerm.toLowerCase();
+
+    return (
+      user.nombre.toLowerCase().includes(term) ||
+      user.email.toLowerCase().includes(term) ||
+      user.telefono.includes(term) ||
+      user.rol.toLowerCase().includes(term) ||
+      (user.is_active == 1 ? "activo" : "inactivo").includes(term)
+    );
+  });
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  
 
   // Calcular qué datos mostrar
   const start = (page - 1) * itemsPerPage;
-  const paginatedData = users.slice(start, start + itemsPerPage);
+  const paginatedData = filteredUsers.slice(start, start + itemsPerPage);
 
   return (
     <>
@@ -106,7 +128,9 @@ const Table_users = () => {
                 <i className="fas fa-search"></i>
                 <input
                   type="text"
-                  placeholder="Buscar usuario por nombre, email o rol..."
+                  placeholder="Buscar usuario por nombre, email, teléfono o rol..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
               <Link to="create/" replace className="nvo-usuario-btn">
@@ -157,8 +181,11 @@ const Table_users = () => {
                         <span
                           style={{
                             padding: "1rem",
-                            border: users.is_active == 1 ? "2px solid green" : "2px solid red",
-                            color: users.is_active == 1  ? "green" : "red",
+                            border:
+                              users.is_active == 1
+                                ? "2px solid green"
+                                : "2px solid red",
+                            color: users.is_active == 1 ? "green" : "red",
                             borderRadius: "8px",
                             minWidth: "max-content",
                           }}
@@ -167,10 +194,18 @@ const Table_users = () => {
                         </span>
                       </td>
                       <td className="acciones-usuario">
-                        <button style={{cursor: "pointer"}}>
+                        {/* <button style={{ cursor: "pointer" }}>
                           <i className="fas fa-edit edit-container"></i>
-                        </button>
-                        <button onClick={() => eliminarUsuario(users.id)} disabled={users.is_active != 1} style={users.is_active != 1 ? {cursor: "disabled"} : {cursor: "pointer"}}>
+                        </button> */}
+                        <button
+                          onClick={() => eliminarUsuario(users.id)}
+                          disabled={users.is_active != 1}
+                          style={
+                            users.is_active != 1
+                              ? { cursor: "disabled" }
+                              : { cursor: "pointer" }
+                          }
+                        >
                           <i className="fas fa-trash-alt delete-container"></i>
                         </button>
                       </td>
