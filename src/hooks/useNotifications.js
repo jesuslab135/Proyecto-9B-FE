@@ -9,6 +9,9 @@ import { API } from '../utils/api/endpoints';
  * Reemplaza el polling con conexión en tiempo real
  */
 export function useNotifications() {
+  // ⚠️ WebSocket deshabilitado temporalmente - Railway backend no tiene WS habilitado
+  const USE_WEBSOCKET = false;
+  
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
@@ -57,6 +60,12 @@ export function useNotifications() {
   
   // Conectar WebSocket
   const connect = useCallback(() => {
+    // Skip WebSocket if disabled
+    if (!USE_WEBSOCKET) {
+      logger.info('⚠️ WebSocket disabled - using REST API fallback');
+      return;
+    }
+    
     if (!consumidorId) {
       logger.warn('No consumidor ID available for WebSocket');
       return;
