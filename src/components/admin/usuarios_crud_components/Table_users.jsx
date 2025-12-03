@@ -3,17 +3,21 @@ import React, { useState, useEffect, use } from "react";
 import Pagination from "../../../components/Global_components/Pagination";
 import { UsuariosAPI } from "../../../utils/api/usuarios.client";
 import { Modal } from "react-responsive-modal";
+import { Link } from "react-router-dom";
 
 const Table_users = () => {
   const [users, setUsers] = useState([]);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [loading, setLoading] = useState(true);
+
+  const [orderLatest, setOrderLatest] = useState(false);
 
   const itemsPerPage = 5;
   const [page, setPage] = useState(1);
 
-  // Funicon para obtener al lista usuarios
-
+  // Funcion para obtener al lista usuarios
   const fetchUsers = async () => {
     try {
       const res = await UsuariosAPI.list();
@@ -31,10 +35,42 @@ const Table_users = () => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+  setPage(1);
+}, [searchTerm]);
+
+
   // Funcion para editar al usuario
 
-  // Funcion para eliminar al usuario
+  // Handle profile update
+  // const handleProfileUpdate = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setMessage({ type: '', text: '' });
 
+  //   try {
+  //     await UsuariosAPI.patch(users.id, {
+  //       nombre: profileData.nombre,
+  //       telefono: profileData.telefono,
+  //       // Email usually shouldn't be changed without verification
+  //     });
+
+  //     // Update local user data
+  //     const updatedUser = { ...users, ...profileData };
+  //     authService.currentUser = updatedUser;
+  //     localStorage.setItem('user', JSON.stringify(updatedUser));
+
+  //     setMessage({ type: 'success', text: '✓ Perfil actualizado exitosamente' });
+  //     logger.info('Profile updated successfully');
+  //   } catch (error) {
+  //     setMessage({ type: 'error', text: '✗ Error al actualizar perfil' });
+  //     logger.error('Profile update failed', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // Funcion para eliminar al usuario con Soft Delete
   const eliminarUsuario = async (id) => {
     if (!confirm("¿Seguro que deseas eliminar este usuario?")) return;
 
@@ -50,12 +86,25 @@ const Table_users = () => {
     }
   };
 
-  // Math.ceil redondea hacia arriba al entero más cercano
-  const totalPages = Math.ceil(users.length / itemsPerPage);
+  // Filtros dinámicos
+  const filteredUsers = users.filter((user) => {
+    const term = searchTerm.toLowerCase();
+
+    return (
+      user.nombre.toLowerCase().includes(term) ||
+      user.email.toLowerCase().includes(term) ||
+      user.telefono.includes(term) ||
+      user.rol.toLowerCase().includes(term) ||
+      (user.is_active == 1 ? "activo" : "inactivo").includes(term)
+    );
+  });
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  
 
   // Calcular qué datos mostrar
   const start = (page - 1) * itemsPerPage;
-  const paginatedData = users.slice(start, start + itemsPerPage);
+  const paginatedData = filteredUsers.slice(start, start + itemsPerPage);
 
   return (
     <>
@@ -79,13 +128,15 @@ const Table_users = () => {
                 <i className="fas fa-search"></i>
                 <input
                   type="text"
-                  placeholder="Buscar usuario por nombre, email o rol..."
+                  placeholder="Buscar usuario por nombre, email, teléfono o rol..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <div className="nvo-usuario-btn">
+              <Link to="create/" replace className="nvo-usuario-btn">
                 <p>Crear nuevo usuario</p>
                 <i className="fas fa-plus-circle"></i>
-              </div>
+              </Link>
             </div>
             <div className="table-container">
               <table className="users-table">
@@ -130,20 +181,31 @@ const Table_users = () => {
                         <span
                           style={{
                             padding: "1rem",
-                            // border: users.status === "Activo" ? "2px solid green" : "2px solid red",
-                            // color: users.status === "Activo" ? "green" : "red",
+                            border:
+                              users.is_active == 1
+                                ? "2px solid green"
+                                : "2px solid red",
+                            color: users.is_active == 1 ? "green" : "red",
                             borderRadius: "8px",
                             minWidth: "max-content",
                           }}
                         >
-                          Activo
+                          {users.is_active == 1 ? "Activo" : "Inactivo"}
                         </span>
                       </td>
                       <td className="acciones-usuario">
-                        <button>
+                        {/* <button style={{ cursor: "pointer" }}>
                           <i className="fas fa-edit edit-container"></i>
-                        </button>
-                        <button onClick={() => eliminarUsuario(users.id)}>
+                        </button> */}
+                        <button
+                          onClick={() => eliminarUsuario(users.id)}
+                          disabled={users.is_active != 1}
+                          style={
+                            users.is_active != 1
+                              ? { cursor: "disabled" }
+                              : { cursor: "pointer" }
+                          }
+                        >
                           <i className="fas fa-trash-alt delete-container"></i>
                         </button>
                       </td>

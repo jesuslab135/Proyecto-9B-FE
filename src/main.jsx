@@ -32,6 +32,8 @@ import FormulariosList from './pages/admin/formularios/FormulariosList';
 import FormularioForm from './pages/admin/formularios/FormularioForm';
 import Reportes_page from './pages/admin/reportes/Reportes_page'
 import Settings_adm_page from './pages/admin/Settings/Settings_adm_page'
+import Create_usuario from './pages/admin/usuarios/Create_usuario'
+import Update_usuario from './pages/admin/usuarios/Update_usuario'
 
 const App = lazy(() => import('./App'));
 
@@ -54,6 +56,14 @@ const router = createBrowserRouter([
       {
         path: 'usuarios',
         element: <CRUD_usuarios />
+      },
+      {
+        path: 'usuarios/create',
+        element: <Create_usuario />
+      },
+      {
+        path: 'usuarios/update/:id',
+        element: <Update_usuario />
       },
       
       // Emociones
@@ -163,10 +173,6 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home />
-      },
-      {
-        path: '/hola',
-        element: <h1>Hola Mundo</h1>
       }
     ]
   },
