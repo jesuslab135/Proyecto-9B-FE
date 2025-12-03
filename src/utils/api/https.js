@@ -1,19 +1,36 @@
 import axios from "axios";
 
-// ✅ HTTP Base URL
-const envBase =
-  import.meta?.env?.VITE_API_BASE_URL ||
-  "http://127.0.0.1:8000/api/";
+// ============================================================
+// ✅ CONFIGURACIÓN DE URLs BASE
+// ============================================================
 
-// ✅ WebSocket Base URL (derivada de HTTP Base URL)
+// Detectar entorno
+const isDevelopment = import.meta.env.MODE === 'development';
+
+// ✅ HTTP Base URL (Railway en producción, localhost en desarrollo)
+const envBase = import.meta?.env?.VITE_API_BASE_URL || 
+  (isDevelopment 
+    ? "http://127.0.0.1:8000/api/" 
+    : "https://backend9b-production.up.railway.app/api/");
+
+// ✅ WebSocket Base URL (wss:// en Railway, ws:// en local)
 export const WS_BASE_URL = envBase
   .replace('http://', 'ws://')
   .replace('https://', 'wss://')
-  .replace('/api/', '/ws/');  // WS usa /ws/ en lugar de /api/
+  .replace('/api/', '/ws/');
 
+console.log('🌐 API Base URL:', envBase);
+console.log('🔌 WebSocket URL:', WS_BASE_URL);
+
+// ============================================================
+// AXIOS INSTANCE
+// ============================================================
 export const http = axios.create({
   baseURL: envBase,
-  timeout: 10000,
+  timeout: 30000, // ⚠️ Aumentado a 30s para Railway (puede ser más lento que local)
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // ============================================================
@@ -21,11 +38,9 @@ export const http = axios.create({
 // ============================================================
 http.interceptors.request.use(
   (cfg) => {
-    // ✅ Usar 'auth_token' (definido en StorageService.KEYS.TOKEN)
     const token = localStorage.getItem("auth_token");
     
     if (token) {
-      // Debug: Log para verificar que el token se está enviando
       console.log('🔑 Sending token:', token.substring(0, 20) + '...');
       cfg.headers.Authorization = `Bearer ${token}`;
     } else {
@@ -34,6 +49,7 @@ http.interceptors.request.use(
     return cfg;
   },
   (error) => {
+    console.error('❌ Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
@@ -56,17 +72,24 @@ const processQueue = (error, token = null) => {
 };
 
 http.interceptors.response.use(
-  // ✅ SUCCESS: Retornar respuesta tal cual
-  (response) => response,
+  (response) => {
+    console.log('✅ Response:', response.config.url, response.status);
+    return response;
+  },
   
-  // ❌ ERROR: Manejo de errores + refresh automático
   async (error) => {
     const originalRequest = error.config;
+
+    // Log del error para debugging
+    console.error('❌ Response error:', {
+      url: originalRequest?.url,
+      status: error.response?.status,
+      message: error.message,
+    });
 
     // Si es 401 (token expirado) y no hemos reintentado
     if (error.response?.status === 401 && !originalRequest._retry) {
       
-      // Si ya estamos refrescando, agregar a la cola
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -82,7 +105,6 @@ http.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // ✅ Usar 'refresh_token' (definido en StorageService.KEYS.REFRESH_TOKEN)
         const refreshToken = localStorage.getItem('refresh_token');
         
         if (!refreshToken) {
@@ -94,11 +116,12 @@ http.interceptors.response.use(
 
         console.log('🔄 Refreshing access token...');
         
-        // ✅ Llamar endpoint de refresh con axios directo
-        const response = await axios.post(
-          'http://127.0.0.1:8000/api/token/refresh/',
-          { refresh: refreshToken }
-        );
+        // ✅ Usar la misma base URL (Railway o local)
+        const refreshUrl = `${envBase.replace('/api/', '')}/api/token/refresh/`;
+        
+        const response = await axios.post(refreshUrl, { 
+          refresh: refreshToken 
+        });
 
         const { access } = response.data;
         
@@ -106,32 +129,24 @@ http.interceptors.response.use(
           throw new Error('No access token in refresh response');
         }
         
-        // ✅ Guardar nuevo token como 'auth_token' (StorageService.KEYS.TOKEN)
         localStorage.setItem('auth_token', access);
         
-        // ✅ También actualizar expiry si existe
-        // (Opcional: el backend puede devolver expires_in)
         if (response.data.expires_in) {
           const expiryTime = Date.now() + (response.data.expires_in * 1000);
           localStorage.setItem('token_expiry', expiryTime.toString());
         }
         
-        // Actualizar header de la petición original
         originalRequest.headers['Authorization'] = 'Bearer ' + access;
-        
-        // Procesar cola de peticiones fallidas
         processQueue(null, access);
         
         console.log('✅ Token refreshed successfully');
         
-        // Reintentar petición original con nuevo token
         return http(originalRequest);
         
       } catch (refreshError) {
         console.error('❌ Failed to refresh token:', refreshError);
         processQueue(refreshError, null);
         
-        // Token refresh falló, hacer logout limpio
         localStorage.clear();
         window.location.href = '/login';
         
@@ -141,7 +156,15 @@ http.interceptors.response.use(
       }
     }
 
-    // Para otros errores (no 401), extraer mensaje amigable
+    // Manejo de errores específicos de Railway
+    if (error.code === 'ECONNABORTED') {
+      return Promise.reject(new Error('Timeout: El servidor tardó demasiado en responder'));
+    }
+
+    if (!error.response) {
+      return Promise.reject(new Error('Error de red: No se pudo conectar con el servidor'));
+    }
+
     const msg =
       error?.response?.data?.detail ||
       error?.response?.data?.message ||
@@ -151,3 +174,5 @@ http.interceptors.response.use(
     return Promise.reject(new Error(msg));
   }
 );
+
+export default http;
