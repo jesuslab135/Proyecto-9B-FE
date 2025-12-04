@@ -8,6 +8,7 @@ export default function Sidebar() {
   const user = authService.getCurrentUser();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const userRole = user?.rol || "guest";
 
@@ -432,28 +433,45 @@ export default function Sidebar() {
                   </p>
                 </div>
                 <div className="flex w-full">
-                  <div onClick={async () => {
+                  <div onClick={async (e) => {
+                    if (isLoggingOut) return; // Prevenir doble click
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsLoggingOut(true);
+                    
                     try {
                       console.log('🔴 Usuario cerrando sesión...');
+                      console.log('%c════════════════════════════════════════', 'color: red; font-weight: bold');
+                      
                       await authService.logout();
+                      
                       console.log('✅ Sesión cerrada exitosamente');
+                      console.log('%c════════════════════════════════════════', 'color: green; font-weight: bold');
                       
                       // Esperar 2 segundos para ver los logs en consola
-                      console.log('⏱️ Esperando 2 segundos antes de redirigir...');
+                      console.log('⏱️ Redirigiendo en 2 segundos...');
                       await new Promise(resolve => setTimeout(resolve, 2000));
                       
+                      console.log('🔄 Redirigiendo a /login...');
                       window.location.href = '/login';
                     } catch (error) {
                       console.error('❌ Error durante logout:', error);
+                      console.log('%c════════════════════════════════════════', 'color: orange; font-weight: bold');
+                      
                       // Fallback: limpiar localStorage manualmente
                       storageService.clearAuth();
                       
                       // Esperar 2 segundos también en caso de error
+                      console.log('⏱️ Redirigiendo en 2 segundos (fallback)...');
                       await new Promise(resolve => setTimeout(resolve, 2000));
+                      
                       window.location.href = '/login';
                     }
                   }} className="cursor-pointer">
-                    <h2 className="text-red-600">Cerrar Sesion</h2>
+                    <h2 className={isLoggingOut ? "text-gray-400" : "text-red-600"}>
+                      {isLoggingOut ? "Cerrando sesión..." : "Cerrar Sesion"}
+                    </h2>
                   </div>
                 </div>
               </div>
