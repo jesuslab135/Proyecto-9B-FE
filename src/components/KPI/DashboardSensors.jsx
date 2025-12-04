@@ -1,67 +1,26 @@
 import { useState, useEffect } from "react";
 import { authService } from "../../services/AuthService";
-import { useWebSocket } from "../../hooks/useWebSocket";
-import { useSensorData } from "../../hooks/useDashboard";
-import { API } from "../../utils/api/endpoints";  // ✅ Importar API config
+import { useSensorData } from "../../hooks/useDashboardWebSocket";
 import "./DashboardSensors.css";
 
 export default function DashboardSensors() {
   const user = authService.getCurrentUser();
   const consumidorId = user?.consumidor_id || 1;
   
-  const [sensorData, setSensorData] = useState([]);
   const [latestReading, setLatestReading] = useState(null);
   
-  // ⚠️ WebSocket deshabilitado temporalmente - Usar API REST (más estable en Railway)
-  const USE_WEBSOCKET = false;
+  // ✅ Nuevo hook con WebSocket + API fallback automático
+  const { data: sensorData, isRealtime } = useSensorData(consumidorId);
   
-  // API REST como fuente principal
-  const { data: apiSensorData, refetch } = useSensorData(consumidorId);
-  
-  // ✅ WebSocket connection usando URL centralizada
-  const { isConnected, error: wsError } = useWebSocket(
-    API.websockets.sensorData(consumidorId),
-    {
-      enabled: USE_WEBSOCKET,
-      maxReconnectAttempts: 2,  // Solo 2 intentos
-      reconnectDelay: 5000,      // 5 segundos entre intentos
-      onMessage: (message) => {
-        if (message.type === 'initial_data') {
-          setSensorData(message.lecturas || []);
-          if (message.lecturas && message.lecturas.length > 0) {
-            setLatestReading(message.lecturas[0]);
-          }
-        } else if (message.type === 'sensor_update') {
-          const newReading = message.lectura;
-          setLatestReading(newReading);
-          setSensorData(prev => [newReading, ...prev].slice(0, 10));
-        }
-      }
-    }
-  );
-  
-  // Auto-refresh con API REST cuando WebSocket está deshabilitado O falla
+  // Actualizar última lectura cuando cambien los datos
   useEffect(() => {
-    if (!USE_WEBSOCKET || wsError) {
-      const interval = setInterval(() => {
-        refetch();
-      }, 5000);
-      return () => clearInterval(interval);
+    if (sensorData && sensorData.length > 0) {
+      setLatestReading(sensorData[0]);
     }
-  }, [USE_WEBSOCKET, wsError, refetch]);
-  
-  // Actualizar desde API REST cuando WebSocket deshabilitado O falla
-  useEffect(() => {
-    if ((!USE_WEBSOCKET || wsError) && apiSensorData) {
-      setSensorData(apiSensorData);
-      if (apiSensorData.length > 0) {
-        setLatestReading(apiSensorData[0]);
-      }
-    }
-  }, [apiSensorData, USE_WEBSOCKET, wsError]);
+  }, [sensorData]);
 
-  // No mostrar error si tenemos fallback de API REST funcionando
-  // Solo mostrar cuando definitivamente no hay datos
+  // Datos procesados para el componente
+  const displayData = sensorData || [];
   
   // Calculate accelerometer magnitude (movement intensity)
   const accelMagnitude = latestReading 
@@ -86,9 +45,11 @@ export default function DashboardSensors() {
       {/* Real-time Indicator */}
       <div className="sensor-header">
         <h4>Datos de Sensores ESP32</h4>
-        <div className={`live-indicator ${(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && latestReading) ? 'connected' : 'disconnected'}`}>
-          <div className={`pulse-dot ${(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && latestReading) ? 'active' : ''}`}></div>
-          <span>{(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && latestReading) ? 'CONECTADO' : 'DESCONECTADO'}</span>
+        <div className={`live-indicator ${latestReading ? 'connected' : 'disconnected'}`}>
+          <div className={`pulse-dot ${latestReading ? 'active' : ''}`}></div>
+          <span>
+            {isRealtime ? '🔴 TIEMPO REAL' : latestReading ? '📡 API REST' : 'DESCONECTADO'}
+          </span>
         </div>
       </div>
 
@@ -263,7 +224,7 @@ export default function DashboardSensors() {
               </tr>
             </thead>
             <tbody>
-              {sensorData && sensorData.slice(0, 5).map((reading, index) => (
+              {displayData && displayData.slice(0, 5).map((reading, index) => (
                 <tr key={index} className={index === 0 ? 'latest-row' : ''}>
                   <td>
                     {new Date(reading.created_at).toLocaleTimeString('es-ES')}

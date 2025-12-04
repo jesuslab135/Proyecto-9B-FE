@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { authService } from "../../services/AuthService";
-import { useWebSocket } from "../../hooks/useWebSocket";
-import { useHeartRateToday, useHeartRateStats } from "../../hooks/useDashboard";
-import { API } from "../../utils/api/endpoints";  // ✅ Importar API config
+import { useHeartRateToday, useHeartRateStats } from "../../hooks/useDashboardWebSocket";
 import "./DashboardHR.css";
 
 export default function DashboardHR() {
@@ -11,66 +9,18 @@ export default function DashboardHR() {
   
   const [hrData, setHrData] = useState(null);
   
-  // ⚠️ WebSocket deshabilitado temporalmente - Usar API REST (más estable en Railway)
-  const USE_WEBSOCKET = false;
+  // ✅ Nuevo hooks con WebSocket + API fallback automático
+  const { data: todayData, isRealtime: todayRealtime } = useHeartRateToday(consumidorId);
+  const { data: statsData, isRealtime: statsRealtime } = useHeartRateStats(consumidorId);
   
-  // API REST como fuente principal
-  const { data: todayData, refetch: refetchToday } = useHeartRateToday(consumidorId);
-  const { data: statsData, refetch: refetchStats } = useHeartRateStats(consumidorId);
+  const isRealtime = todayRealtime || statsRealtime;
   
-  // ✅ WebSocket connection usando URL centralizada
-  const { isConnected, error: wsError } = useWebSocket(
-    API.websockets.heartRate(consumidorId),
-    {
-      enabled: USE_WEBSOCKET,
-      maxReconnectAttempts: 2,
-      reconnectDelay: 5000,
-      onMessage: (message) => {
-        
-        if (message.type === 'initial_data') {
-          setHrData(message.data);
-        } else if (message.type === 'hr_update') {
-          setHrData(prev => {
-            if (!prev) return { ventanas: [message.data], stats: {}, promedio_dia: null };
-            
-            const ventanas = prev.ventanas || [];
-            const existingIndex = ventanas.findIndex(
-              v => v.id === message.data.ventana_id
-            );
-            
-            if (existingIndex >= 0) {
-              ventanas[existingIndex] = {
-                ...ventanas[existingIndex],
-                heart_rate_mean: message.data.hr_mean,
-                heart_rate_std: message.data.hr_std,
-              };
-            } else {
-              ventanas.unshift({
-                id: message.data.ventana_id,
-                window_start: message.data.window_start,
-                window_end: message.data.window_end,
-                heart_rate_mean: message.data.hr_mean,
-                heart_rate_std: message.data.hr_std,
-              });
-            }
-            
-            return { ...prev, ventanas };
-          });
-        }
-      }
-    }
-  );
-  
-  // Actualizar desde API REST cuando WebSocket deshabilitado O falla
+  // Actualizar desde los hooks cuando cambien los datos
   useEffect(() => {
-    if ((!USE_WEBSOCKET || wsError) && todayData && statsData) {
+    if (todayData && statsData) {
       // El backend devuelve todayData como array, acceder al primer elemento
       const today = Array.isArray(todayData) ? todayData[0] : todayData;
       const stats = Array.isArray(statsData) ? statsData[0] : statsData;
-      
-      console.log('📊 today:', today);
-      console.log('📊 stats:', stats);
-      console.log('📊 ventanas:', today?.ventanas);
       
       setHrData({
         ventanas: today?.ventanas || [],
@@ -83,26 +33,12 @@ export default function DashboardHR() {
         }
       });
     }
-  }, [todayData, statsData, USE_WEBSOCKET, wsError]);
-
-  // Auto-refresh cada 10 segundos cuando usa API REST
-  useEffect(() => {
-    if (!USE_WEBSOCKET) {
-      const interval = setInterval(() => {
-        refetchToday();
-        refetchStats();
-      }, 10000); // Cada 10 segundos
-      
-      return () => clearInterval(interval);
-    }
-  }, [USE_WEBSOCKET, refetchToday, refetchStats]);
-
-  // No mostrar error si tenemos fallback de API REST funcionando
+  }, [todayData, statsData]);
 
   if (!hrData) {
     return (
       <div className="hr-loading">
-        <p>⏳ Conectando a datos de frecuencia cardíaca...</p>
+        <p>⏳ Cargando datos de frecuencia cardíaca...</p>
       </div>
     );
   }
@@ -114,9 +50,11 @@ export default function DashboardHR() {
       {/* Stats Header */}
       <div className="hr-stats-header">
         <h4>Frecuencia cardíaca</h4>
-        <div className={`live-indicator ${(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && hrData) ? 'connected' : 'disconnected'}`}>
-          <div className={`pulse-dot ${(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && hrData) ? 'active' : ''}`}></div>
-          <span>{(USE_WEBSOCKET && isConnected) || (!USE_WEBSOCKET && hrData) ? 'CONECTADO' : 'DESCONECTADO'}</span>
+        <div className={`live-indicator ${hrData ? 'connected' : 'disconnected'}`}>
+          <div className={`pulse-dot ${hrData ? 'active' : ''}`}></div>
+          <span>
+            {isRealtime ? '🔴 TIEMPO REAL' : hrData ? '📡 API REST' : 'DESCONECTADO'}
+          </span>
         </div>
       </div>
 
