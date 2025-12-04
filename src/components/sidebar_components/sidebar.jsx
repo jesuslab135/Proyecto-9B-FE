@@ -432,7 +432,19 @@ export default function Sidebar() {
                   </p>
                 </div>
                 <div className="flex w-full">
-                  <div onClick={() => storageService.clearAuth()} className="cursor-pointer">
+                  <div onClick={async () => {
+                    try {
+                      console.log('🔴 Usuario cerrando sesión...');
+                      await authService.logout();
+                      console.log('✅ Sesión cerrada exitosamente');
+                      window.location.href = '/login';
+                    } catch (error) {
+                      console.error('❌ Error durante logout:', error);
+                      // Fallback: limpiar localStorage manualmente
+                      storageService.clearAuth();
+                      window.location.href = '/login';
+                    }
+                  }} className="cursor-pointer">
                     <h2 className="text-red-600">Cerrar Sesion</h2>
                   </div>
                 </div>
