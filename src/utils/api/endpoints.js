@@ -4,6 +4,7 @@ import { WS_BASE_URL } from "./https";  // ✅ Importar WS_BASE_URL
 export const API = {
   usuarios: "usuarios",
   usLogin: "usuarios/login",
+  usLogout: "usuarios/logout",
   usRegister: "usuarios/register",
   usSoftDelete: "usuarios",
   usRestore: "usuarios",
