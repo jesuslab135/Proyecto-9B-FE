@@ -437,11 +437,19 @@ export default function Sidebar() {
                       console.log('🔴 Usuario cerrando sesión...');
                       await authService.logout();
                       console.log('✅ Sesión cerrada exitosamente');
+                      
+                      // Esperar 2 segundos para ver los logs en consola
+                      console.log('⏱️ Esperando 2 segundos antes de redirigir...');
+                      await new Promise(resolve => setTimeout(resolve, 2000));
+                      
                       window.location.href = '/login';
                     } catch (error) {
                       console.error('❌ Error durante logout:', error);
                       // Fallback: limpiar localStorage manualmente
                       storageService.clearAuth();
+                      
+                      // Esperar 2 segundos también en caso de error
+                      await new Promise(resolve => setTimeout(resolve, 2000));
                       window.location.href = '/login';
                     }
                   }} className="cursor-pointer">
