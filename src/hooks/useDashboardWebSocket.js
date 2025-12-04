@@ -56,6 +56,7 @@ const useDashboardWebSocket = (channel, queryKey, apiFallback, consumidorId, opt
 
   // Callback para fallback a API
   const handleFallbackToAPI = useCallback(() => {
+    logger.info(`🔄 Falling back to API for ${channel}`);
     setWsConnected(false);
     // React Query se encargará de refetch automáticamente
   }, [channel]);
@@ -80,9 +81,7 @@ const useDashboardWebSocket = (channel, queryKey, apiFallback, consumidorId, opt
         
         if (connected) {
           setWsConnected(true);
-          if (import.meta.env.DEV) {
-            logger.info(`✅ WebSocket active for ${channel}`);
-          }
+          logger.info(`✅ WebSocket active for ${channel}`);
           
           // Escuchar mensajes
           wsService.on(channel, targetConsumidorId, 'message', handleWebSocketMessage);
@@ -94,7 +93,7 @@ const useDashboardWebSocket = (channel, queryKey, apiFallback, consumidorId, opt
             timestamp: Date.now()
           });
         } else {
-          // Silencioso: usar API REST por defecto cuando WS no disponible
+          logger.info(`📡 Using API REST for ${channel}`);
           setWsConnected(false);
         }
       } catch {
@@ -185,7 +184,7 @@ export const useHeartRateStats = (consumidorId) => {
     DashboardAPI.heartRateStats,
     consumidorId,
     {
-      updateInterval: 10000, // Actualizar cada 10s
+      updateInterval: 5000, // Actualizar cada 10s
       transform: (message) => {
         if (message.type === 'heart_rate_stats_update' && message.data) {
           return message.data;
@@ -246,7 +245,7 @@ export const useDesiresStats = (consumidorId) => {
     DashboardAPI.desiresStats,
     consumidorId,
     {
-      updateInterval: 15000,
+      updateInterval: 5000,
       transform: (message) => {
         if (message.type === 'desire_stats_update' && message.data) {
           return message.data;
@@ -287,7 +286,7 @@ export const usePredictionSummary = (consumidorId) => {
     DashboardAPI.predictionSummary,
     consumidorId,
     {
-      updateInterval: 20000,
+      updateInterval: 5000,
       transform: (message) => {
         if (message.type === 'prediction_summary_update' && message.data) {
           return message.data;
@@ -308,7 +307,7 @@ export const useDailySummary = (consumidorId) => {
     DashboardAPI.dailySummary,
     consumidorId,
     {
-      updateInterval: 30000, // Actualizar cada 30s
+      updateInterval: 5000, // Actualizar cada 30s
       transform: (message) => {
         if (message.type === 'daily_summary_update' && message.data) {
           return message.data;
