@@ -181,17 +181,19 @@ class AuthService {
 
 
   async logout() {
+    console.log('🔴 [1/5] LOGOUT STARTED - User:', this.currentUser?.email);
+    
     logger.info('AuthService: User logging out', {
       userId: this.currentUser?.id,
     });
 
     try {
       // 🔥 NUEVO: Llamar al backend para limpiar sesión en Redis
-      console.log('🔴 Calling backend logout endpoint...');
+      console.log('🔴 [2/5] Calling backend logout endpoint...');
       const response = await UsuariosAPI.logout();
       
       logger.info('AuthService: Backend logout successful', response);
-      console.log('✅ Backend logout successful:', {
+      console.log('✅ [3/5] Backend logout successful:', {
         session_stopped: response.session_stopped,
         cache_cleared: response.cache_cleared,
         consumidor_id: response.consumidor_id,
@@ -201,14 +203,17 @@ class AuthService {
     } catch (error) {
       // Log error but continue with local cleanup
       logger.error('AuthService: Backend logout failed, continuing with local cleanup', error);
-      console.warn('⚠️ Backend logout failed, but continuing with local cleanup');
+      console.warn('⚠️ [3/5] Backend logout failed, but continuing with local cleanup');
     }
 
     // Limpiar estado local
+    console.log('🔴 [4/5] Clearing local storage and user state...');
     this.currentUser = null;
     storageService.clearAuth();
     this._notifyAuthChange(false, null);
 
+    console.log('✅ [5/5] LOGOUT COMPLETED - Redirecting to /login');
+    
     return {
       success: true,
       redirectTo: '/login',
