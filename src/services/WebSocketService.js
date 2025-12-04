@@ -77,10 +77,10 @@ class WebSocketService {
           resolve(true);
         };
 
-        ws.onerror = (error) => {
+        ws.onerror = () => {
           clearTimeout(timeout);
-          logger.debug(`⚠️ WebSocket connection failed: ${channelKey}, using API fallback`);
-          reject(error);
+          // Silencioso: el backend no tiene WebSocket configurado
+          reject(new Error('WebSocket not available'));
         };
       });
 
@@ -102,7 +102,6 @@ class WebSocketService {
       };
 
       ws.onclose = (event) => {
-        logger.debug(`🔌 WebSocket disconnected: ${channelKey}`);
         this.connections.delete(channelKey);
         
         // Cleanup heartbeat
@@ -110,13 +109,12 @@ class WebSocketService {
           clearInterval(ws._heartbeatInterval);
         }
         
-        // No reconectar si fue cierre normal
-        if (event.code === 1000) {
-          logger.debug(`Normal closure for ${channelKey}, not reconnecting`);
+        // No reconectar si fue cierre normal o error 404
+        if (event.code === 1000 || event.code === 1006) {
           return;
         }
         
-        // Intentar reconectar
+        // Intentar reconectar solo si no fue error 404
         this._handleReconnect(channel, consumidorId, channelKey);
       };
 
@@ -125,7 +123,7 @@ class WebSocketService {
       await connectionPromise;
       return true;
     } catch {
-      logger.debug(`WebSocket not available for ${channelKey}, using API REST`);
+      // Silencioso: fallback a API REST es automático
       this.connections.delete(channelKey);
       return false;
     }
@@ -149,7 +147,7 @@ class WebSocketService {
     const attempts = this.reconnectAttempts.get(channelKey) || 0;
     
     if (attempts >= this.maxReconnectAttempts) {
-      logger.debug(`⏸️ Max reconnection attempts reached for ${channelKey}, using API REST`);
+      // Silencioso: ya sabemos que no hay WebSocket
       this._emit(channelKey, 'fallback_to_api', { channel, consumidorId });
       return;
     }
@@ -157,7 +155,10 @@ class WebSocketService {
     const delay = this.reconnectDelay * Math.pow(2, attempts);
     this.reconnectAttempts.set(channelKey, attempts + 1);
     
-    logger.debug(`🔄 Reconnecting ${channelKey} in ${delay}ms (attempt ${attempts + 1}/${this.maxReconnectAttempts})`);
+    // Solo loguear en desarrollo
+    if (import.meta.env.DEV) {
+      logger.debug(`🔄 Reconnecting ${channelKey} (${attempts + 1}/${this.maxReconnectAttempts})`);
+    }
     
     setTimeout(() => {
       this.connect(channel, consumidorId);

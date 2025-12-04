@@ -56,7 +56,6 @@ const useDashboardWebSocket = (channel, queryKey, apiFallback, consumidorId, opt
 
   // Callback para fallback a API
   const handleFallbackToAPI = useCallback(() => {
-    logger.info(`🔄 Falling back to API for ${channel}`);
     setWsConnected(false);
     // React Query se encargará de refetch automáticamente
   }, [channel]);
@@ -81,7 +80,9 @@ const useDashboardWebSocket = (channel, queryKey, apiFallback, consumidorId, opt
         
         if (connected) {
           setWsConnected(true);
-          logger.info(`✅ WebSocket active for ${channel}`);
+          if (import.meta.env.DEV) {
+            logger.info(`✅ WebSocket active for ${channel}`);
+          }
           
           // Escuchar mensajes
           wsService.on(channel, targetConsumidorId, 'message', handleWebSocketMessage);
@@ -93,7 +94,7 @@ const useDashboardWebSocket = (channel, queryKey, apiFallback, consumidorId, opt
             timestamp: Date.now()
           });
         } else {
-          logger.info(`📡 Using API REST for ${channel}`);
+          // Silencioso: usar API REST por defecto cuando WS no disponible
           setWsConnected(false);
         }
       } catch {
@@ -138,7 +139,7 @@ const useDashboardWebSocket = (channel, queryKey, apiFallback, consumidorId, opt
  */
 export const useSensorData = (consumidorId) => {
   return useDashboardWebSocket(
-    'sensor_data',
+    'sensor-data',
     'dash_sensorData',
     DashboardAPI.sensorData,
     consumidorId,
@@ -159,7 +160,7 @@ export const useSensorData = (consumidorId) => {
  */
 export const useHeartRateToday = (consumidorId) => {
   return useDashboardWebSocket(
-    'heart_rate_today',
+    'heart-rate-today',
     'dash_hrToday',
     DashboardAPI.heartRateToday,
     consumidorId,
@@ -179,7 +180,7 @@ export const useHeartRateToday = (consumidorId) => {
  */
 export const useHeartRateStats = (consumidorId) => {
   return useDashboardWebSocket(
-    'heart_rate_stats',
+    'heart-rate-stats',
     'dash_hrStats',
     DashboardAPI.heartRateStats,
     consumidorId,
@@ -200,7 +201,7 @@ export const useHeartRateStats = (consumidorId) => {
  */
 export const useHeartRate = (consumidorId) => {
   return useDashboardWebSocket(
-    'heart_rate',
+    'heart-rate',
     'dash_hr',
     DashboardAPI.heartRate,
     consumidorId,
@@ -220,7 +221,7 @@ export const useHeartRate = (consumidorId) => {
  */
 export const useDesiresTracking = (consumidorId) => {
   return useDashboardWebSocket(
-    'desires_tracking',
+    'desires-tracking',
     'dash_dTrack',
     DashboardAPI.desiresTracking,
     consumidorId,
@@ -240,7 +241,7 @@ export const useDesiresTracking = (consumidorId) => {
  */
 export const useDesiresStats = (consumidorId) => {
   return useDashboardWebSocket(
-    'desires_stats',
+    'desires-stats',
     'dash_dStats',
     DashboardAPI.desiresStats,
     consumidorId,
@@ -261,7 +262,7 @@ export const useDesiresStats = (consumidorId) => {
  */
 export const usePredictionTimeline = (consumidorId) => {
   return useDashboardWebSocket(
-    'prediction_timeline',
+    'prediction-timeline',
     'dash_predTL',
     DashboardAPI.predictionTimeline,
     consumidorId,
@@ -281,7 +282,7 @@ export const usePredictionTimeline = (consumidorId) => {
  */
 export const usePredictionSummary = (consumidorId) => {
   return useDashboardWebSocket(
-    'prediction_summary',
+    'prediction-summary',
     'dash_predSum',
     DashboardAPI.predictionSummary,
     consumidorId,
@@ -302,7 +303,7 @@ export const usePredictionSummary = (consumidorId) => {
  */
 export const useDailySummary = (consumidorId) => {
   return useDashboardWebSocket(
-    'daily_summary',
+    'daily-summary',
     'dash_daily',
     DashboardAPI.dailySummary,
     consumidorId,
@@ -323,7 +324,7 @@ export const useDailySummary = (consumidorId) => {
  */
 export const useWeeklyComparison = (consumidorId) => {
   return useDashboardWebSocket(
-    'weekly_comparison',
+    'weekly-comparison',
     'dash_weekly',
     DashboardAPI.weeklyComparison,
     consumidorId,
@@ -344,7 +345,7 @@ export const useWeeklyComparison = (consumidorId) => {
  */
 export const useActiveWindow = (consumidorId) => {
   return useDashboardWebSocket(
-    'active_window',
+    'active-window',
     'dash_activeWindow',
     DashboardAPI.activeWindow,
     consumidorId,
@@ -364,7 +365,7 @@ export const useActiveWindow = (consumidorId) => {
  */
 export const useHabitStats = (consumidorId) => {
   return useDashboardWebSocket(
-    'habit_stats',
+    'habit-stats',
     'dash_habitStats',
     DashboardAPI.habitStats,
     consumidorId,
@@ -385,7 +386,7 @@ export const useHabitStats = (consumidorId) => {
  */
 export const useHabitTracking = (consumidorId) => {
   return useDashboardWebSocket(
-    'habit_tracking',
+    'habit-tracking',
     'dash_habitTrack',
     DashboardAPI.habitTracking,
     consumidorId,
